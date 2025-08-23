@@ -62,8 +62,8 @@ export function AutomationCard({
   const StatusIcon = config.icon;
 
   return (
-    <Card className="group hover:shadow-elegant transition-all duration-300 hover:scale-[1.02] border-border/50">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+    <Card className="group hover:shadow-elegant transition-all duration-300 hover:scale-[1.02] border border-border/50 relative">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 relative z-10">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-gradient-primary rounded-lg">
             <Icon className="h-4 w-4 text-white" />
@@ -76,11 +76,11 @@ export function AutomationCard({
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 relative z-20">
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="z-50">
             <DropdownMenuItem>
               <Settings className="mr-2 h-4 w-4" />
               Configurar
@@ -106,7 +106,7 @@ export function AutomationCard({
         </DropdownMenu>
       </CardHeader>
       
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-3 relative z-10">
         <p className="text-sm text-muted-foreground line-clamp-2">
           {description}
         </p>

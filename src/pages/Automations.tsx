@@ -144,64 +144,69 @@ export default function Automations() {
       </div>
 
       {/* Automation Types Overview */}
-      <div>
-        <h2 className="text-xl font-semibold text-foreground mb-4">Tipos de Automação</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold text-foreground">Tipos de Automação</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {automationTypes.map((type) => (
             <Card 
               key={type.id}
-              className={`cursor-pointer transition-all duration-200 hover:scale-105 border-0 shadow-elegant ${selectedType === type.name ? 'ring-2 ring-primary' : ''}`}
+              className={`cursor-pointer transition-all duration-200 hover:scale-105 relative overflow-hidden ${selectedType === type.name ? 'ring-2 ring-primary shadow-lg' : 'shadow-md'}`}
               onClick={() => setSelectedType(selectedType === type.name ? null : type.name)}
             >
-              <div className={`absolute inset-0 ${type.color} rounded-lg`} />
-              <div className="relative bg-card/90 backdrop-blur-sm h-full">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <type.icon className="h-6 w-6 text-foreground" />
-                    <Badge variant="secondary" className="text-xs">
-                      {type.count}
-                    </Badge>
+              <div className={`absolute inset-0 ${type.color} opacity-10`} />
+              <CardHeader className="relative pb-2">
+                <div className="flex items-center justify-between">
+                  <div className={`p-2 rounded-lg ${type.color}`}>
+                    <type.icon className="h-4 w-4 text-white" />
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <CardTitle className="text-sm font-semibold mb-1">
-                    {type.name}
-                  </CardTitle>
-                  <CardDescription className="text-xs line-clamp-2">
-                    {type.description}
-                  </CardDescription>
-                </CardContent>
-              </div>
+                  <Badge variant="secondary" className="text-xs">
+                    {type.count}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="relative">
+                <CardTitle className="text-sm font-semibold mb-1 text-foreground">
+                  {type.name}
+                </CardTitle>
+                <CardDescription className="text-xs line-clamp-2 text-muted-foreground">
+                  {type.description}
+                </CardDescription>
+              </CardContent>
             </Card>
           ))}
         </div>
       </div>
 
       {/* Filters and Search */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+        <div className="relative flex-1 min-w-0">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 z-10" />
           <Input
             placeholder="Buscar automações..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-10 w-full"
           />
         </div>
         
         <Button 
           variant="outline" 
           onClick={() => setSelectedType(null)}
-          className={selectedType ? "bg-accent" : ""}
+          className={`shrink-0 ${selectedType ? "bg-accent" : ""}`}
         >
           <Filter className="mr-2 h-4 w-4" />
-          {selectedType ? `Filtrado: ${selectedType}` : "Todos os Tipos"}
+          <span className="hidden sm:inline">
+            {selectedType ? `Filtrado: ${selectedType}` : "Todos os Tipos"}
+          </span>
+          <span className="sm:hidden">
+            {selectedType ? "Filtrado" : "Todos"}
+          </span>
         </Button>
       </div>
 
       {/* Automations Grid */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <h2 className="text-xl font-semibold text-foreground">
             Suas Automações {selectedType && `- ${selectedType}`}
           </h2>
@@ -211,25 +216,25 @@ export default function Automations() {
         </div>
         
         {filteredAutomations.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredAutomations.map((automation) => (
               <AutomationCard key={automation.id} {...automation} />
             ))}
           </div>
         ) : (
-          <Card className="p-8 text-center">
-            <div className="space-y-4">
+          <Card className="p-8 text-center border border-border">
+            <div className="space-y-4 max-w-md mx-auto">
               <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto">
                 <Search className="h-8 w-8 text-muted-foreground" />
               </div>
-              <div>
+              <div className="space-y-2">
                 <h3 className="text-lg font-semibold text-foreground">Nenhuma automação encontrada</h3>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Tente ajustar os filtros ou criar uma nova automação
                 </p>
               </div>
               <Link to="/automations/new">
-                <Button className="bg-gradient-primary">
+                <Button className="bg-gradient-primary shadow-elegant">
                   <Plus className="mr-2 h-4 w-4" />
                   Criar Primeira Automação
                 </Button>
