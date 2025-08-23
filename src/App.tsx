@@ -5,6 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Automations from "./pages/Automations";
+import Webhooks from "./pages/Webhooks";
+import Logs from "./pages/Logs";
+import Settings from "./pages/Settings";
+import NewAutomation from "./pages/NewAutomation";
 import NotFound from "./pages/NotFound";
 import { Layout } from "./components/Layout";
 
@@ -20,6 +24,10 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/automations" element={<Automations />} />
+            <Route path="/automations/new" element={<NewAutomation />} />
+            <Route path="/webhooks" element={<Webhooks />} />
+            <Route path="/logs" element={<Logs />} />
+            <Route path="/settings" element={<Settings />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
