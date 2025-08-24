@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Plus, Filter, Search, Star, Package, Calendar, Cloud, Search as SearchIcon } from "lucide-react";
+import { Plus, Filter, Search, Star, Package, Calendar, Cloud, Search as SearchIcon, RotateCw, Clock, AlertTriangle, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
 import { AutomationCard } from "@/components/Dashboard/AutomationCard";
+import { NewAutomationModal } from "@/components/Automations/NewAutomationModal";
 
 const automationTypes = [
   {
@@ -116,6 +116,7 @@ const allAutomations = [
 export default function Automations() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [showNewAutomationModal, setShowNewAutomationModal] = useState(false);
 
   const filteredAutomations = allAutomations.filter(automation => {
     const matchesSearch = automation.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -124,23 +125,86 @@ export default function Automations() {
     return matchesSearch && matchesType;
   });
 
+  // Statistics
+  const stats = {
+    active: allAutomations.filter(a => a.status === 'active').length,
+    inactive: allAutomations.filter(a => a.status === 'inactive').length,
+    error: allAutomations.filter(a => a.status === 'error').length,
+    totalSavings: "45h/mês"
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Automações</h1>
-          <p className="text-muted-foreground">
-            Gerencie todas as suas automações empresariais
-          </p>
+        <div className="flex items-center space-x-3">
+          <RotateCw className="h-8 w-8 text-primary" />
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Suas Automações</h1>
+            <p className="text-muted-foreground">
+              Gerencie todos os seus fluxos automatizados
+            </p>
+          </div>
         </div>
         
-        <Link to="/automations/new">
-          <Button className="bg-gradient-primary shadow-elegant hover:scale-105 transition-all duration-200">
-            <Plus className="mr-2 h-4 w-4" />
-            Nova Automação
-          </Button>
-        </Link>
+        <Button 
+          className="bg-gradient-primary shadow-elegant hover:scale-105 transition-all duration-200"
+          onClick={() => setShowNewAutomationModal(true)}
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Nova Automação
+        </Button>
+      </div>
+
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="border border-success/20 bg-success/5">
+          <CardContent className="p-4 flex items-center space-x-3">
+            <div className="p-2 bg-success/20 rounded-lg">
+              <RotateCw className="h-4 w-4 text-success" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-success">{stats.active}</p>
+              <p className="text-sm text-muted-foreground">Ativas</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border border-warning/20 bg-warning/5">
+          <CardContent className="p-4 flex items-center space-x-3">
+            <div className="p-2 bg-warning/20 rounded-lg">
+              <Clock className="h-4 w-4 text-warning" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-warning">{stats.inactive}</p>
+              <p className="text-sm text-muted-foreground">Pausadas</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border border-destructive/20 bg-destructive/5">
+          <CardContent className="p-4 flex items-center space-x-3">
+            <div className="p-2 bg-destructive/20 rounded-lg">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-destructive">{stats.error}</p>
+              <p className="text-sm text-muted-foreground">Com Erro</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border border-primary/20 bg-primary/5">
+          <CardContent className="p-4 flex items-center space-x-3">
+            <div className="p-2 bg-primary/20 rounded-lg">
+              <TrendingUp className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-primary">{stats.totalSavings}</p>
+              <p className="text-sm text-muted-foreground">Economia</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Automation Types Overview */}
@@ -233,16 +297,23 @@ export default function Automations() {
                   Tente ajustar os filtros ou criar uma nova automação
                 </p>
               </div>
-              <Link to="/automations/new">
-                <Button className="bg-gradient-primary shadow-elegant">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Criar Primeira Automação
-                </Button>
-              </Link>
+              <Button 
+                className="bg-gradient-primary shadow-elegant"
+                onClick={() => setShowNewAutomationModal(true)}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Criar Primeira Automação
+              </Button>
             </div>
           </Card>
         )}
       </div>
+
+      {/* New Automation Modal */}
+      <NewAutomationModal 
+        open={showNewAutomationModal} 
+        onOpenChange={setShowNewAutomationModal} 
+      />
     </div>
   );
 }
