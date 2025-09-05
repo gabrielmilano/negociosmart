@@ -3,12 +3,18 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./hooks/useAuth";
+import { AutomacoesProvider } from "./contexts/AutomacoesContext";
+import { WebhooksProvider } from "./contexts/WebhooksContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import Automations from "./pages/Automations";
 import Webhooks from "./pages/Webhooks";
 import Logs from "./pages/Logs";
 import Settings from "./pages/Settings";
 import NewAutomation from "./pages/NewAutomation";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import { Layout } from "./components/Layout";
 
@@ -16,24 +22,66 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/automations" element={<Automations />} />
-            <Route path="/automations/new" element={<NewAutomation />} />
-            <Route path="/webhooks" element={<Webhooks />} />
-            <Route path="/logs" element={<Logs />} />
-            <Route path="/settings" element={<Settings />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <AutomacoesProvider>
+        <WebhooksProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Dashboard />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/automations" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Automations />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/automations/new" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <NewAutomation />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/webhooks" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Webhooks />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/logs" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Logs />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/settings" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Settings />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </WebhooksProvider>
+      </AutomacoesProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

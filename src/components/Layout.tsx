@@ -1,22 +1,39 @@
 import { ReactNode } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Bell, User } from "lucide-react";
+import { Bell, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/hooks/useAuth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 export function Layout({ children }: LayoutProps) {
+  const { user, usuario, logout } = useAuth();
   const notificationCount = 3; // Simulação
+
+  const handleLogout = async () => {
+    await logout();
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   return (
     <SidebarProvider>
@@ -55,16 +72,31 @@ export function Layout({ children }: LayoutProps) {
               {/* User Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="flex items-center space-x-2">
-                    <User className="h-4 w-4" />
-                    <span className="hidden md:inline">Admin</span>
+                  <Button variant="ghost" size="sm" className="flex items-center space-x-2 h-8">
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage src={usuario?.avatar_url} />
+                      <AvatarFallback className="text-xs">
+                        {usuario?.nome ? getInitials(usuario.nome) : 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="hidden md:inline text-sm">
+                      {usuario?.nome || user?.email || 'Usuário'}
+                    </span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                    {user?.email}
+                  </div>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem>Perfil</DropdownMenuItem>
                   <DropdownMenuItem>Configurações</DropdownMenuItem>
                   <DropdownMenuItem>Suporte</DropdownMenuItem>
-                  <DropdownMenuItem>Sair</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sair
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
