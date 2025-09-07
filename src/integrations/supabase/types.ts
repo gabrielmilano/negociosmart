@@ -14,7 +14,173 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      automacoes: {
+        Row: {
+          atualizado_em: string
+          categoria: string | null
+          configuracao: Json | null
+          criado_em: string
+          descricao: string | null
+          id: string
+          metricas: Json | null
+          nome: string
+          status: string
+          token: string
+          usuario_id: string
+          webhook: string
+        }
+        Insert: {
+          atualizado_em?: string
+          categoria?: string | null
+          configuracao?: Json | null
+          criado_em?: string
+          descricao?: string | null
+          id?: string
+          metricas?: Json | null
+          nome: string
+          status?: string
+          token: string
+          usuario_id: string
+          webhook: string
+        }
+        Update: {
+          atualizado_em?: string
+          categoria?: string | null
+          configuracao?: Json | null
+          criado_em?: string
+          descricao?: string | null
+          id?: string
+          metricas?: Json | null
+          nome?: string
+          status?: string
+          token?: string
+          usuario_id?: string
+          webhook?: string
+        }
+        Relationships: []
+      }
+      logs_webhook: {
+        Row: {
+          id: string
+          ip_address: string
+          method: string
+          request_data: Json | null
+          response_data: Json | null
+          response_time: number
+          status_code: number
+          timestamp: string
+          usuario_id: string
+          webhook_id: string
+        }
+        Insert: {
+          id?: string
+          ip_address: string
+          method: string
+          request_data?: Json | null
+          response_data?: Json | null
+          response_time: number
+          status_code: number
+          timestamp?: string
+          usuario_id: string
+          webhook_id: string
+        }
+        Update: {
+          id?: string
+          ip_address?: string
+          method?: string
+          request_data?: Json | null
+          response_data?: Json | null
+          response_time?: number
+          status_code?: number
+          timestamp?: string
+          usuario_id?: string
+          webhook_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "logs_webhook_webhook_id_fkey"
+            columns: ["webhook_id"]
+            isOneToOne: false
+            referencedRelation: "webhooks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      usuarios: {
+        Row: {
+          avatar_url: string | null
+          criado_em: string
+          email: string
+          id: string
+          limites: Json
+          nome: string
+          plano: string
+          role: string
+          ultimo_acesso: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          criado_em?: string
+          email: string
+          id?: string
+          limites?: Json
+          nome: string
+          plano?: string
+          role?: string
+          ultimo_acesso?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          criado_em?: string
+          email?: string
+          id?: string
+          limites?: Json
+          nome?: string
+          plano?: string
+          role?: string
+          ultimo_acesso?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      webhooks: {
+        Row: {
+          configuracao: Json | null
+          criado_em: string
+          id: string
+          metricas: Json | null
+          nome: string
+          status: string
+          token: string
+          url: string
+          usuario_id: string
+        }
+        Insert: {
+          configuracao?: Json | null
+          criado_em?: string
+          id?: string
+          metricas?: Json | null
+          nome: string
+          status?: string
+          token: string
+          url: string
+          usuario_id: string
+        }
+        Update: {
+          configuracao?: Json | null
+          criado_em?: string
+          id?: string
+          metricas?: Json | null
+          nome?: string
+          status?: string
+          token?: string
+          url?: string
+          usuario_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

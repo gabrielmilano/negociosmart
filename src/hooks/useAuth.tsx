@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react'
 import { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/integrations/supabase/client'
 
 interface AuthContextType {
   user: User | null
@@ -46,8 +46,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const { data, error } = await supabase
       .from('usuarios')
       .select('*')
-      .eq('id', userId)
-      .single()
+      .eq('user_id', userId)
+      .maybeSingle()
 
     if (data && !error) {
       setUsuario(data)
@@ -55,7 +55,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       await supabase
         .from('usuarios')
         .update({ ultimo_acesso: new Date().toISOString() })
-        .eq('id', userId)
+        .eq('user_id', userId)
     }
   }
 
@@ -79,7 +79,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (data.user && !error) {
       // Create user profile
       await supabase.from('usuarios').insert({
-        id: data.user.id,
+        user_id: data.user.id,
         email,
         nome,
         plano: 'gratuito',
