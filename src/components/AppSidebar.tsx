@@ -10,7 +10,8 @@ import {
   Package,
   Calendar,
   Cloud,
-  Search
+  Search,
+  Package2
 } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 
@@ -29,6 +30,7 @@ import {
 const mainNavItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Automações", url: "/automations", icon: Zap },
+  { title: "Estoque", url: "/estoque", icon: Package2 },
   { title: "Webhooks", url: "/webhooks", icon: Webhook },
   { title: "Logs", url: "/logs", icon: Activity },
   { title: "Configurações", url: "/settings", icon: Settings },

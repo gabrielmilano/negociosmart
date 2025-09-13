@@ -13,6 +13,7 @@ import Webhooks from "./pages/Webhooks";
 import Logs from "./pages/Logs";
 import Settings from "./pages/Settings";
 import NewAutomation from "./pages/NewAutomation";
+import Estoque from "./pages/Estoque";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
@@ -71,6 +72,13 @@ const App = () => (
                   <ProtectedRoute>
                     <Layout>
                       <Settings />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/estoque" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Estoque />
                     </Layout>
                   </ProtectedRoute>
                 } />
