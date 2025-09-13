@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, createContext, useContext, ReactNode } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
-import { toast } from '@/components/ui/sonner'
+import { toast } from 'sonner'
 
 interface Produto {
   id: string
@@ -165,7 +165,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
       .order('nome')
 
     if (data && !error) {
-      setProdutos(data)
+      setProdutos(data as any[])
     } else if (error) {
       toast.error('Erro ao carregar produtos')
       console.error(error)
@@ -295,12 +295,23 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
       return false
     }
 
+    // Calcular quantidade posterior
+    let quantidadePosterior = produto.estoque_atual
+    if (dados.tipo === 'entrada') {
+      quantidadePosterior = produto.estoque_atual + dados.quantidade
+    } else if (dados.tipo === 'saida') {
+      quantidadePosterior = produto.estoque_atual - dados.quantidade
+    } else if (dados.tipo === 'ajuste') {
+      quantidadePosterior = dados.quantidade
+    }
+
     // Preparar dados da movimentação
     const movimentacaoData = {
       ...dados,
       empresa_id: empresaId,
       usuario_id: user.id,
       quantidade_anterior: produto.estoque_atual,
+      quantidade_posterior: quantidadePosterior,
       valor_total: dados.valor_unitario ? dados.valor_unitario * dados.quantidade : undefined
     }
 
