@@ -117,11 +117,13 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
     }
   }
 
-  // Simulação de detecção manual para demonstração
-  const simulateDetection = () => {
-    const codigoSimulado = `${Math.floor(Math.random() * 9000000000000) + 1000000000000}`
-    onScanSuccess(codigoSimulado)
-    onClose()
+  // Input manual para código de barras
+  const handleManualInput = () => {
+    const codigo = prompt('Digite o código de barras:')
+    if (codigo && codigo.trim()) {
+      onScanSuccess(codigo.trim())
+      onClose()
+    }
   }
 
   if (!isOpen) return null
@@ -187,14 +189,14 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
                   <span>Flash</span>
                 </Button>
                 
-                {/* Botão para simular detecção (remover em produção) */}
+                {/* Botão para entrada manual */}
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={simulateDetection}
-                  className="bg-green-50 border-green-200 text-green-700"
+                  onClick={handleManualInput}
+                  className="bg-blue-50 border-blue-200 text-blue-700"
                 >
-                  Simular Detecção
+                  Digitar Código
                 </Button>
               </div>
 
