@@ -200,7 +200,9 @@ export const MovimentacaoForm: React.FC<MovimentacaoFormProps> = ({
                 className="text-lg"
               />
               {errors.codigo_busca && (
-                <span className="text-sm text-red-500">{errors.codigo_busca.message}</span>
+                <span className="text-sm text-red-500">
+                  {typeof errors.codigo_busca.message === 'string' ? errors.codigo_busca.message : 'Campo obrigatório'}
+                </span>
               )}
             </div>
 

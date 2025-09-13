@@ -125,7 +125,9 @@ export const ProdutoForm: React.FC<ProdutoFormProps> = ({
                       placeholder="Ex: PROD001"
                     />
                     {errors.codigo_interno && (
-                      <span className="text-sm text-red-500">{errors.codigo_interno.message}</span>
+                      <span className="text-sm text-red-500">
+                        {typeof errors.codigo_interno.message === 'string' ? errors.codigo_interno.message : 'Campo obrigatório'}
+                      </span>
                     )}
                   </div>
 
@@ -156,7 +158,9 @@ export const ProdutoForm: React.FC<ProdutoFormProps> = ({
                     placeholder="Ex: Filtro de Óleo Automotivo"
                   />
                   {errors.nome && (
-                    <span className="text-sm text-red-500">{errors.nome.message}</span>
+                    <span className="text-sm text-red-500">
+                      {typeof errors.nome.message === 'string' ? errors.nome.message : 'Campo obrigatório'}
+                    </span>
                   )}
                 </div>
 
