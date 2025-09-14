@@ -35,18 +35,24 @@ const EstoqueContent: React.FC = () => {
   const dashboard = getRelatorioDashboard()
 
   // Filtrar produtos
-  const produtosFiltrados = produtos.filter(produto => {
-    const matchesSearch = produto.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         produto.codigo_interno.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (produto.codigo_barras && produto.codigo_barras.includes(searchTerm))
-    
+  const produtosFiltrados = produtos.filter((produto) => {
+    const nome = (produto.nome ?? '').toLowerCase()
+    const codigoInterno = (produto.codigo_interno ?? '').toLowerCase()
+    const codigoBarras = produto.codigo_barras ?? ''
+    const matchesSearch =
+      nome.includes(searchTerm.toLowerCase()) ||
+      codigoInterno.includes(searchTerm.toLowerCase()) ||
+      (codigoBarras && codigoBarras.includes(searchTerm))
+
     const matchesCategoria = !filtroCategoria || produto.categoria_id === filtroCategoria
-    
-    const matchesStatus = !filtroStatus || 
-                         (filtroStatus === 'estoque_baixo' && produto.estoque_baixo) ||
-                         (filtroStatus === 'vencendo' && produto.produto_vencendo) ||
-                         (filtroStatus === 'sem_estoque' && produto.estoque_atual === 0)
-    
+
+    const estoqueAtual = produto.estoque_atual ?? 0
+    const matchesStatus =
+      !filtroStatus ||
+      (filtroStatus === 'estoque_baixo' && !!produto.estoque_baixo) ||
+      (filtroStatus === 'vencendo' && !!produto.produto_vencendo) ||
+      (filtroStatus === 'sem_estoque' && estoqueAtual === 0)
+
     return matchesSearch && matchesCategoria && matchesStatus
   })
 
@@ -75,7 +81,7 @@ const EstoqueContent: React.FC = () => {
   }
 
   const getStatusBadge = (produto: any) => {
-    if (produto.estoque_atual === 0) {
+    if ((produto.estoque_atual ?? 0) === 0) {
       return <Badge variant="destructive">Sem Estoque</Badge>
     }
     if (produto.estoque_baixo) {
@@ -325,7 +331,7 @@ const EstoqueContent: React.FC = () => {
                       </div>
                       <div>
                         <span className="text-muted-foreground">Preço:</span>
-                        <p className="font-medium">R$ {produto.preco_venda.toFixed(2)}</p>
+                        <p className="font-medium">R$ {(produto.preco_venda ?? 0).toFixed(2)}</p>
                       </div>
                     </div>
 

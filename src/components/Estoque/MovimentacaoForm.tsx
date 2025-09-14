@@ -107,8 +107,8 @@ export const MovimentacaoForm: React.FC<MovimentacaoFormProps> = ({
     const produtoEncontrado = await buscarProdutoPorCodigo(codigoBusca)
     if (produtoEncontrado) {
       setProdutoSelecionado(produtoEncontrado)
-      setValue('produto_id', produtoEncontrado.id)
-      setValue('valor_unitario', produtoEncontrado.preco_custo)
+      setValue('produto_id', produtoEncontrado.id ?? '')
+      setValue('valor_unitario', produtoEncontrado.preco_custo ?? 0)
     } else {
       setProdutoSelecionado(null)
       setValue('produto_id', '')

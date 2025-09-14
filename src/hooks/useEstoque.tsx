@@ -215,11 +215,12 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
     }
 
     // Calcular quantidade posterior
-    let quantidadePosterior = produto.estoque_atual
+    const estoqueAtual = produto.estoque_atual ?? 0
+    let quantidadePosterior = estoqueAtual
     if (dados.tipo === 'entrada') {
-      quantidadePosterior = produto.estoque_atual + dados.quantidade
+      quantidadePosterior = estoqueAtual + dados.quantidade
     } else if (dados.tipo === 'saida') {
-      quantidadePosterior = produto.estoque_atual - dados.quantidade
+      quantidadePosterior = estoqueAtual - dados.quantidade
     } else if (dados.tipo === 'ajuste') {
       quantidadePosterior = dados.quantidade
     }
@@ -229,7 +230,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
       ...dados,
       empresa_id: empresaId,
       usuario_id: user.id,
-      quantidade_anterior: produto.estoque_atual,
+      quantidade_anterior: estoqueAtual,
       quantidade_posterior: quantidadePosterior,
       valor_total: dados.valor_unitario ? dados.valor_unitario * dados.quantidade : undefined
     }
@@ -351,11 +352,14 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
   // Relatórios
   const getRelatorioDashboard = useCallback(() => {
     const totalProdutos = produtos.length
-    const produtosAtivos = produtos.filter(p => p.ativo).length
-    const produtosEstoqueBaixo = produtos.filter(p => p.estoque_baixo).length
-    const produtosVencendo = produtos.filter(p => p.produto_vencendo).length
-    const valorTotalEstoque = produtos.reduce((total, p) => 
-      total + (p.estoque_atual * p.preco_custo), 0)
+    const produtosAtivos = produtos.filter(p => !!p.ativo).length
+    const produtosEstoqueBaixo = produtos.filter(p => !!p.estoque_baixo).length
+    const produtosVencendo = produtos.filter(p => !!p.produto_vencendo).length
+    const valorTotalEstoque = produtos.reduce((total, p) => {
+      const estoque = p.estoque_atual ?? 0
+      const custo = p.preco_custo ?? 0
+      return total + estoque * custo
+    }, 0)
 
     return {
       totalProdutos,
