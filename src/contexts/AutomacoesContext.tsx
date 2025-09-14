@@ -7,7 +7,7 @@ interface Automacao {
   nome: string
   categoria: string
   descricao: string
-  status: 'ativa' | 'pausada' | 'erro'
+  status: string
   webhook: string
   token: string
   configuracao: any

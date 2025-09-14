@@ -7,7 +7,7 @@ interface Webhook {
   nome: string
   url: string
   token: string
-  status: 'ativo' | 'inativo' | 'erro'
+  status: string
   configuracao: any
   metricas: any
   criado_em: string
