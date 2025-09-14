@@ -329,11 +329,12 @@ const EstoqueContent: React.FC = () => {
                       </div>
                     </div>
 
-                    {produto.localizacao && (produto.localizacao.setor || produto.localizacao.prateleira) && (
+                    {typeof produto.localizacao === 'object' && produto.localizacao && 
+                     ((produto.localizacao as any).setor || (produto.localizacao as any).prateleira) && (
                       <div className="text-sm">
                         <span className="text-muted-foreground">Local:</span>
                         <p className="font-medium">
-                          {[produto.localizacao.setor, produto.localizacao.prateleira, produto.localizacao.posicao]
+                          {[(produto.localizacao as any).setor, (produto.localizacao as any).prateleira, (produto.localizacao as any).posicao]
                             .filter(Boolean)
                             .join('-')}
                         </p>

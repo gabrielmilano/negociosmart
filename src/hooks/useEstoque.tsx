@@ -2,95 +2,14 @@ import { useState, useEffect, useCallback, createContext, useContext, ReactNode 
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
 import { toast } from 'sonner'
+import type { Database } from '@/integrations/supabase/types'
 
-interface Produto {
-  id: string
-  empresa_id: string
-  codigo_interno: string
-  codigo_barras?: string
-  nome: string
-  descricao?: string
-  categoria_id?: string
-  fornecedor_id?: string
-  preco_custo: number
-  preco_venda: number
-  margem_lucro: number
-  estoque_atual: number
-  estoque_minimo: number
-  estoque_maximo: number
-  unidade_medida: string
-  localizacao: {
-    setor: string
-    prateleira: string
-    posicao: string
-  }
-  peso?: number
-  dimensoes: {
-    altura?: number
-    largura?: number
-    profundidade?: number
-  }
-  data_validade?: string
-  campos_extras: Record<string, any>
-  imagens: string[]
-  ativo: boolean
-  observacoes?: string
-  // Campos calculados
-  categoria_nome?: string
-  categoria_cor?: string
-  fornecedor_nome?: string
-  estoque_baixo?: boolean
-  produto_vencendo?: boolean
-  entradas_mes?: number
-  saidas_mes?: number
-}
-
-interface MovimentacaoEstoque {
-  id: string
-  empresa_id: string
-  produto_id: string
-  tipo: 'entrada' | 'saida' | 'ajuste' | 'transferencia' | 'inventario'
-  subtipo?: string
-  quantidade: number
-  quantidade_anterior: number
-  quantidade_posterior: number
-  valor_unitario?: number
-  valor_total?: number
-  documento_numero?: string
-  documento_tipo?: string
-  fornecedor_cliente?: string
-  motivo: string
-  observacoes?: string
-  data_movimentacao: string
-  usuario_id: string
+type Produto = Database['public']['Views']['view_produtos_completos']['Row']
+type MovimentacaoEstoque = Database['public']['Tables']['movimentacoes_estoque']['Row'] & {
   usuario_nome?: string
 }
-
-interface Categoria {
-  id: string
-  empresa_id: string
-  nome: string
-  descricao?: string
-  cor: string
-  icone: string
-  categoria_pai_id?: string
-  ativo: boolean
-}
-
-interface Fornecedor {
-  id: string
-  empresa_id: string
-  nome: string
-  cnpj_cpf?: string
-  contato: {
-    telefone: string
-    email: string
-    endereco: string
-    pessoa_contato: string
-  }
-  observacoes?: string
-  ativo: boolean
-}
+type Categoria = Database['public']['Tables']['categorias_produto']['Row']
+type Fornecedor = Database['public']['Tables']['fornecedores']['Row']
 
 interface EstoqueContextType {
   produtos: Produto[]
@@ -103,8 +22,8 @@ interface EstoqueContextType {
   // Produtos
   fetchProdutos: () => Promise<void>
   buscarProdutoPorCodigo: (codigo: string) => Promise<Produto | null>
-  criarProduto: (dados: Omit<Produto, 'id' | 'empresa_id'>) => Promise<Produto | null>
-  atualizarProduto: (id: string, dados: Partial<Produto>) => Promise<boolean>
+  criarProduto: (dados: any) => Promise<any | null>
+  atualizarProduto: (id: string, dados: any) => Promise<boolean>
   excluirProduto: (id: string) => Promise<boolean>
   
   // Movimentações
@@ -122,11 +41,11 @@ interface EstoqueContextType {
   
   // Categorias
   fetchCategorias: () => Promise<void>
-  criarCategoria: (dados: Omit<Categoria, 'id' | 'empresa_id'>) => Promise<Categoria | null>
+  criarCategoria: (dados: any) => Promise<Categoria | null>
   
   // Fornecedores
   fetchFornecedores: () => Promise<void>
-  criarFornecedor: (dados: Omit<Fornecedor, 'id' | 'empresa_id'>) => Promise<Fornecedor | null>
+  criarFornecedor: (dados: any) => Promise<Fornecedor | null>
   
   // Relatórios
   getRelatorioDashboard: () => {
@@ -194,7 +113,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
   }, [empresaId])
 
   // Criar novo produto
-  const criarProduto = useCallback(async (dados: Omit<Produto, 'id' | 'empresa_id'>) => {
+  const criarProduto = useCallback(async (dados: any) => {
     if (!empresaId || !user) return null
 
     // Gerar código interno se não fornecido
@@ -225,7 +144,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
   }, [empresaId, user, fetchProdutos])
 
   // Atualizar produto
-  const atualizarProduto = useCallback(async (id: string, dados: Partial<Produto>) => {
+  const atualizarProduto = useCallback(async (id: string, dados: any) => {
     if (!user) return false
 
     const { error } = await supabase
@@ -336,10 +255,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
 
     const { data, error } = await supabase
       .from('movimentacoes_estoque')
-      .select(`
-        *,
-        usuarios(nome)
-      `)
+      .select('*')
       .eq('empresa_id', empresaId)
       .eq('produto_id', produtoId)
       .order('data_movimentacao', { ascending: false })
@@ -348,7 +264,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
     if (data && !error) {
       const movimentacoesFormatadas = data.map(mov => ({
         ...mov,
-        usuario_nome: mov.usuarios?.nome || 'Usuário não encontrado'
+        usuario_nome: 'Usuário'
       }))
       setMovimentacoes(movimentacoesFormatadas)
     }
@@ -371,7 +287,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
   }, [empresaId])
 
   // Criar categoria
-  const criarCategoria = useCallback(async (dados: Omit<Categoria, 'id' | 'empresa_id'>) => {
+  const criarCategoria = useCallback(async (dados: any) => {
     if (!empresaId) return null
 
     const { data, error } = await supabase
@@ -410,7 +326,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
   }, [empresaId])
 
   // Criar fornecedor
-  const criarFornecedor = useCallback(async (dados: Omit<Fornecedor, 'id' | 'empresa_id'>) => {
+  const criarFornecedor = useCallback(async (dados: any) => {
     if (!empresaId) return null
 
     const { data, error } = await supabase
