@@ -18,8 +18,8 @@ const EstoqueContent: React.FC = () => {
   const [showScanner, setShowScanner] = useState(false)
   const [produtoEditando, setProdutoEditando] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [filtroCategoria, setFiltroCategoria] = useState('')
-  const [filtroStatus, setFiltroStatus] = useState('')
+  const [filtroCategoria, setFiltroCategoria] = useState('todas')
+  const [filtroStatus, setFiltroStatus] = useState('todos')
   const [quickScanMode, setQuickScanMode] = useState(false)
 
   const {
@@ -45,11 +45,11 @@ const EstoqueContent: React.FC = () => {
       codigoInterno.includes(searchTerm.toLowerCase()) ||
       (codigoBarras && codigoBarras.includes(searchTerm))
 
-    const matchesCategoria = !filtroCategoria || produto.categoria_id === filtroCategoria
+    const matchesCategoria = filtroCategoria === 'todas' || produto.categoria_id === filtroCategoria
 
     const estoqueAtual = produto.estoque_atual ?? 0
     const matchesStatus =
-      !filtroStatus ||
+      filtroStatus === 'todos' ||
       (filtroStatus === 'estoque_baixo' && !!produto.estoque_baixo) ||
       (filtroStatus === 'vencendo' && !!produto.produto_vencendo) ||
       (filtroStatus === 'sem_estoque' && estoqueAtual === 0)
@@ -341,7 +341,7 @@ const EstoqueContent: React.FC = () => {
                 <SelectValue placeholder="Todas as categorias" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas as categorias</SelectItem>
+                <SelectItem value="todas">Todas as categorias</SelectItem>
                 {categorias.map((categoria) => (
                   <SelectItem key={categoria.id} value={categoria.id}>
                     {categoria.icone} {categoria.nome}
@@ -355,7 +355,7 @@ const EstoqueContent: React.FC = () => {
                 <SelectValue placeholder="Todos os status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os status</SelectItem>
+                <SelectItem value="todos">Todos os status</SelectItem>
                 <SelectItem value="estoque_baixo">Estoque Baixo</SelectItem>
                 <SelectItem value="vencendo">Vencendo</SelectItem>
                 <SelectItem value="sem_estoque">Sem Estoque</SelectItem>
