@@ -42,10 +42,12 @@ interface EstoqueContextType {
   // Categorias
   fetchCategorias: () => Promise<void>
   criarCategoria: (dados: any) => Promise<Categoria | null>
+  atualizarCategoria: (id: string, dados: any) => Promise<boolean>
   
   // Fornecedores
   fetchFornecedores: () => Promise<void>
   criarFornecedor: (dados: any) => Promise<Fornecedor | null>
+  atualizarFornecedor: (id: string, dados: any) => Promise<boolean>
   
   // Relatórios
   getRelatorioDashboard: () => {
@@ -310,6 +312,27 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
     }
   }, [empresaId, fetchCategorias])
 
+  // Atualizar categoria
+  const atualizarCategoria = useCallback(async (id: string, dados: any) => {
+    if (!empresaId) return false
+
+    const { error } = await supabase
+      .from('categorias_produto')
+      .update(dados)
+      .eq('id', id)
+      .eq('empresa_id', empresaId)
+
+    if (!error) {
+      toast.success('Categoria atualizada!')
+      await fetchCategorias()
+      return true
+    } else {
+      toast.error('Erro ao atualizar categoria')
+      console.error(error)
+      return false
+    }
+  }, [empresaId, fetchCategorias])
+
   // Buscar fornecedores
   const fetchFornecedores = useCallback(async () => {
     if (!empresaId) return
@@ -346,6 +369,27 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
     } else {
       toast.error('Erro ao criar fornecedor')
       return null
+    }
+  }, [empresaId, fetchFornecedores])
+
+  // Atualizar fornecedor
+  const atualizarFornecedor = useCallback(async (id: string, dados: any) => {
+    if (!empresaId) return false
+
+    const { error } = await supabase
+      .from('fornecedores')
+      .update(dados)
+      .eq('id', id)
+      .eq('empresa_id', empresaId)
+
+    if (!error) {
+      toast.success('Fornecedor atualizado!')
+      await fetchFornecedores()
+      return true
+    } else {
+      toast.error('Erro ao atualizar fornecedor')
+      console.error(error)
+      return false
     }
   }, [empresaId, fetchFornecedores])
 
@@ -399,8 +443,10 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
       fetchMovimentacoesProduto,
       fetchCategorias,
       criarCategoria,
+      atualizarCategoria,
       fetchFornecedores,
       criarFornecedor,
+      atualizarFornecedor,
       getRelatorioDashboard
     }}>
       {children}

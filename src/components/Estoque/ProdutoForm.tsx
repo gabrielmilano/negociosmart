@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
-import { Camera, Package, DollarSign, MapPin, Calendar, Image } from 'lucide-react'
+import { Camera, Package, DollarSign, MapPin, Calendar, Image, Link, X, Plus } from 'lucide-react'
 import { BarcodeScanner } from './BarcodeScanner'
 import { useEstoque } from '@/hooks/useEstoque'
 
@@ -24,7 +24,7 @@ export const ProdutoForm: React.FC<ProdutoFormProps> = ({
   onCancel
 }) => {
   const [showScanner, setShowScanner] = useState(false)
-  const [previewImages, setPreviewImages] = useState<string[]>([])
+  const [imagemUrl, setImagemUrl] = useState(produto?.imagens?.[0] || '')
   const { categorias, fornecedores } = useEstoque()
   
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
@@ -74,8 +74,20 @@ export const ProdutoForm: React.FC<ProdutoFormProps> = ({
     setShowScanner(false)
   }
 
+  const handleImagemChange = (url: string) => {
+    setImagemUrl(url)
+  }
+
+  const removeImagem = () => {
+    setImagemUrl('')
+  }
+
   const onSubmit = (data: any) => {
-    onSave(data)
+    const dadosCompletos = {
+      ...data,
+      imagens: imagemUrl ? [imagemUrl] : []
+    }
+    onSave(dadosCompletos)
   }
 
   const unidadesMedida = [
@@ -377,6 +389,63 @@ export const ProdutoForm: React.FC<ProdutoFormProps> = ({
 
               {/* Aba Detalhes */}
               <TabsContent value="detalhes" className="space-y-4">
+                {/* Seção de Imagem */}
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <Image className="h-4 w-4" />
+                    <Label>Imagem do Produto (Opcional)</Label>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex space-x-2">
+                      <div className="flex-1">
+                        <Input
+                          placeholder="Cole a URL da imagem aqui..."
+                          value={imagemUrl}
+                          onChange={(e) => handleImagemChange(e.target.value)}
+                        />
+                      </div>
+                      {imagemUrl && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={removeImagem}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                    
+                    <p className="text-xs text-muted-foreground">
+                      💡 Dica: Use serviços como Imgur, Google Drive ou hospede a imagem em seu site
+                    </p>
+                    
+                    {/* Preview da imagem */}
+                    {imagemUrl && (
+                      <div className="border rounded-lg p-4 bg-muted/50">
+                        <Label className="text-sm text-muted-foreground">Preview:</Label>
+                        <div className="mt-2">
+                          <img
+                            src={imagemUrl}
+                            alt="Preview do produto"
+                            className="max-w-full h-32 object-cover rounded-lg border"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none'
+                              e.currentTarget.nextElementSibling!.style.display = 'block'
+                            }}
+                          />
+                          <div 
+                            className="hidden p-4 text-center text-muted-foreground bg-muted rounded-lg"
+                          >
+                            ❌ Erro ao carregar imagem. Verifique se a URL está correta.
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="peso">Peso (kg)</Label>

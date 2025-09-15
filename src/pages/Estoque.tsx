@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Plus, Package, Search, Filter, BarChart3, AlertTriangle, Calendar, TrendingUp, TrendingDown, Scan } from 'lucide-react'
+import { Plus, Package, Search, Filter, BarChart3, AlertTriangle, Calendar, TrendingUp, TrendingDown, Scan, Tag, Truck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -10,13 +10,19 @@ import { EstoqueProvider, useEstoque } from '@/hooks/useEstoque'
 import { ProdutoForm } from '@/components/Estoque/ProdutoForm'
 import { MovimentacaoForm } from '@/components/Estoque/MovimentacaoForm'
 import { BarcodeScanner } from '@/components/Estoque/BarcodeScanner'
+import { CategoriaForm } from '@/components/Estoque/CategoriaForm'
+import { FornecedorForm } from '@/components/Estoque/FornecedorForm'
 
 const EstoqueContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState('produtos')
   const [showProdutoForm, setShowProdutoForm] = useState(false)
   const [showMovimentacaoForm, setShowMovimentacaoForm] = useState(false)
+  const [showCategoriaForm, setShowCategoriaForm] = useState(false)
+  const [showFornecedorForm, setShowFornecedorForm] = useState(false)
   const [showScanner, setShowScanner] = useState(false)
   const [produtoEditando, setProdutoEditando] = useState(null)
+  const [categoriaEditando, setCategoriaEditando] = useState(null)
+  const [fornecedorEditando, setFornecedorEditando] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [filtroCategoria, setFiltroCategoria] = useState('todas')
   const [filtroStatus, setFiltroStatus] = useState('todos')
@@ -26,8 +32,11 @@ const EstoqueContent: React.FC = () => {
     produtos,
     loading,
     categorias,
+    fornecedores,
     criarProduto,
     atualizarProduto,
+    criarCategoria,
+    criarFornecedor,
     registrarMovimentacao,
     buscarProdutoPorCodigo,
     getRelatorioDashboard
@@ -70,6 +79,28 @@ const EstoqueContent: React.FC = () => {
   const handleSaveMovimentacao = async (dados: any) => {
     await registrarMovimentacao(dados)
     setShowMovimentacaoForm(false)
+  }
+
+  const handleSaveCategoria = async (dados: any) => {
+    if (categoriaEditando) {
+      // TODO: Implementar atualização de categoria
+      console.log('Atualizar categoria:', categoriaEditando.id, dados)
+    } else {
+      await criarCategoria(dados)
+    }
+    setShowCategoriaForm(false)
+    setCategoriaEditando(null)
+  }
+
+  const handleSaveFornecedor = async (dados: any) => {
+    if (fornecedorEditando) {
+      // TODO: Implementar atualização de fornecedor
+      console.log('Atualizar fornecedor:', fornecedorEditando.id, dados)
+    } else {
+      await criarFornecedor(dados)
+    }
+    setShowFornecedorForm(false)
+    setFornecedorEditando(null)
   }
 
   const handleBarcodeScanned = async (codigo: string) => {
@@ -167,6 +198,32 @@ const EstoqueContent: React.FC = () => {
     )
   }
 
+  if (showCategoriaForm) {
+    return (
+      <CategoriaForm
+        categoria={categoriaEditando}
+        onSave={handleSaveCategoria}
+        onCancel={() => {
+          setShowCategoriaForm(false)
+          setCategoriaEditando(null)
+        }}
+      />
+    )
+  }
+
+  if (showFornecedorForm) {
+    return (
+      <FornecedorForm
+        fornecedor={fornecedorEditando}
+        onSave={handleSaveFornecedor}
+        onCancel={() => {
+          setShowFornecedorForm(false)
+          setFornecedorEditando(null)
+        }}
+      />
+    )
+  }
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -197,6 +254,22 @@ const EstoqueContent: React.FC = () => {
           >
             <Scan className="h-4 w-4" />
             <span>{quickScanMode ? 'Modo Ativo' : 'Modo Leitor'}</span>
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setShowCategoriaForm(true)}
+            className="bg-gradient-warning text-warning-foreground"
+          >
+            <Tag className="mr-2 h-4 w-4" />
+            Categoria
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setShowFornecedorForm(true)}
+            className="bg-gradient-secondary"
+          >
+            <Truck className="mr-2 h-4 w-4" />
+            Fornecedor
           </Button>
           <Button
             onClick={() => setShowMovimentacaoForm(true)}
@@ -288,9 +361,11 @@ const EstoqueContent: React.FC = () => {
       )}
 
       {/* Tabs de Conteúdo */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="produtos">Produtos</TabsTrigger>
+          <TabsTrigger value="categorias">Categorias</TabsTrigger>
+          <TabsTrigger value="fornecedores">Fornecedores</TabsTrigger>
           <TabsTrigger value="movimentacoes">Movimentações</TabsTrigger>
           <TabsTrigger value="relatorios">Relatórios</TabsTrigger>
         </TabsList>
@@ -423,6 +498,20 @@ const EstoqueContent: React.FC = () => {
                       </div>
                     </div>
 
+                    {/* Imagem do produto */}
+                    {produto.imagens && produto.imagens.length > 0 && (
+                      <div className="mt-3">
+                        <img
+                          src={produto.imagens[0]}
+                          alt={produto.nome}
+                          className="w-full h-24 object-cover rounded-md border"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none'
+                          }}
+                        />
+                      </div>
+                    )}
+
                     {typeof produto.localizacao === 'object' && produto.localizacao && 
                      ((produto.localizacao as any).setor || (produto.localizacao as any).prateleira) && (
                       <div className="text-sm">
@@ -455,6 +544,161 @@ const EstoqueContent: React.FC = () => {
                       >
                         Movimentar
                       </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Aba Categorias */}
+        <TabsContent value="categorias" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold">Categorias de Produtos</h3>
+            <Button onClick={() => setShowCategoriaForm(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Nova Categoria
+            </Button>
+          </div>
+
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-2 text-muted-foreground">Carregando categorias...</p>
+            </div>
+          ) : categorias.length === 0 ? (
+            <Card className="p-8 text-center">
+              <Tag className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Nenhuma categoria encontrada</h3>
+              <p className="text-muted-foreground mb-4">
+                Crie categorias para organizar melhor seus produtos
+              </p>
+              <Button onClick={() => setShowCategoriaForm(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Criar Primeira Categoria
+              </Button>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {categorias.map((categoria) => (
+                <Card key={categoria.id} className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <span 
+                        className="text-2xl"
+                        style={{ color: categoria.cor }}
+                      >
+                        {categoria.icone}
+                      </span>
+                      <div className="flex-1">
+                        <h4 className="font-semibold">{categoria.nome}</h4>
+                        {categoria.descricao && (
+                          <p className="text-sm text-muted-foreground line-clamp-2">
+                            {categoria.descricao}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <Badge variant="outline">
+                        {produtos.filter(p => p.categoria_id === categoria.id).length} produtos
+                      </Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setCategoriaEditando(categoria)
+                          setShowCategoriaForm(true)
+                        }}
+                      >
+                        Editar
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Aba Fornecedores */}
+        <TabsContent value="fornecedores" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold">Fornecedores</h3>
+            <Button onClick={() => setShowFornecedorForm(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Novo Fornecedor
+            </Button>
+          </div>
+
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-2 text-muted-foreground">Carregando fornecedores...</p>
+            </div>
+          ) : fornecedores.length === 0 ? (
+            <Card className="p-8 text-center">
+              <Truck className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Nenhum fornecedor encontrado</h3>
+              <p className="text-muted-foreground mb-4">
+                Cadastre fornecedores para facilitar o controle de compras
+              </p>
+              <Button onClick={() => setShowFornecedorForm(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Cadastrar Primeiro Fornecedor
+              </Button>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {fornecedores.map((fornecedor) => (
+                <Card key={fornecedor.id} className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-semibold">{fornecedor.nome}</h4>
+                        {fornecedor.cnpj_cpf && (
+                          <p className="text-sm text-muted-foreground">
+                            {fornecedor.cnpj_cpf}
+                          </p>
+                        )}
+                      </div>
+                      
+                      {fornecedor.contato && (
+                        <div className="space-y-1 text-sm">
+                          {fornecedor.contato.telefone && (
+                            <p className="text-muted-foreground">
+                              📞 {fornecedor.contato.telefone}
+                            </p>
+                          )}
+                          {fornecedor.contato.email && (
+                            <p className="text-muted-foreground">
+                              ✉️ {fornecedor.contato.email}
+                            </p>
+                          )}
+                          {fornecedor.contato.pessoa_contato && (
+                            <p className="text-muted-foreground">
+                              👤 {fornecedor.contato.pessoa_contato}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                      
+                      <div className="flex justify-between items-center pt-2">
+                        <Badge variant="outline">
+                          {produtos.filter(p => p.fornecedor_id === fornecedor.id).length} produtos
+                        </Badge>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setFornecedorEditando(fornecedor)
+                            setShowFornecedorForm(true)
+                          }}
+                        >
+                          Editar
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
