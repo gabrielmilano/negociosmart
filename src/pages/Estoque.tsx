@@ -664,21 +664,21 @@ const EstoqueContent: React.FC = () => {
                         )}
                       </div>
                       
-                      {fornecedor.contato && (
+                      {fornecedor.contato && typeof fornecedor.contato === 'object' && (
                         <div className="space-y-1 text-sm">
-                          {fornecedor.contato.telefone && (
+                          {(fornecedor.contato as any).telefone && (
                             <p className="text-muted-foreground">
-                              📞 {fornecedor.contato.telefone}
+                              📞 {(fornecedor.contato as any).telefone}
                             </p>
                           )}
-                          {fornecedor.contato.email && (
+                          {(fornecedor.contato as any).email && (
                             <p className="text-muted-foreground">
-                              ✉️ {fornecedor.contato.email}
+                              ✉️ {(fornecedor.contato as any).email}
                             </p>
                           )}
-                          {fornecedor.contato.pessoa_contato && (
+                          {(fornecedor.contato as any).pessoa_contato && (
                             <p className="text-muted-foreground">
-                              👤 {fornecedor.contato.pessoa_contato}
+                              👤 {(fornecedor.contato as any).pessoa_contato}
                             </p>
                           )}
                         </div>

@@ -432,7 +432,8 @@ export const ProdutoForm: React.FC<ProdutoFormProps> = ({
                             className="max-w-full h-32 object-cover rounded-lg border"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none'
-                              e.currentTarget.nextElementSibling!.style.display = 'block'
+                              const nextElement = e.currentTarget.nextElementSibling as HTMLElement
+                              if (nextElement) nextElement.style.display = 'block'
                             }}
                           />
                           <div 
