@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Plus, Package, Search, Filter, BarChart3, AlertTriangle, Calendar, TrendingUp, TrendingDown } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { Plus, Package, Search, Filter, BarChart3, AlertTriangle, Calendar, TrendingUp, TrendingDown, Scan } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -20,6 +20,7 @@ const EstoqueContent: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [filtroCategoria, setFiltroCategoria] = useState('')
   const [filtroStatus, setFiltroStatus] = useState('')
+  const [quickScanMode, setQuickScanMode] = useState(false)
 
   const {
     produtos,
@@ -72,13 +73,64 @@ const EstoqueContent: React.FC = () => {
   }
 
   const handleBarcodeScanned = async (codigo: string) => {
-    const produto = await buscarProdutoPorCodigo(codigo)
-    if (produto) {
-      // Abrir modal de movimentação com produto pré-selecionado
-      setShowMovimentacaoForm(true)
+    try {
+      const produto = await buscarProdutoPorCodigo(codigo)
+      if (produto) {
+        // Filtrar para mostrar apenas este produto
+        setSearchTerm(codigo)
+        // Focar no produto encontrado
+        alert(`Produto encontrado: ${produto.nome} - Estoque: ${produto.estoque_atual}`)
+      } else {
+        const criar = confirm(`Produto com código ${codigo} não encontrado. Deseja criar um novo produto?`)
+        if (criar) {
+          setShowProdutoForm(true)
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao buscar produto:', error)
+      alert('Erro ao buscar produto. Tente novamente.')
     }
     setShowScanner(false)
   }
+
+  // Modo de busca rápida por leitor de código de barras
+  useEffect(() => {
+    if (!quickScanMode) return
+
+    let inputBuffer = ''
+    let lastInputTime = 0
+
+    const handleKeyPress = (event: KeyboardEvent) => {
+      const currentTime = Date.now()
+      
+      // Se passou mais de 100ms desde a última entrada, limpa o buffer
+      if (currentTime - lastInputTime > 100) {
+        inputBuffer = ''
+      }
+      
+      lastInputTime = currentTime
+
+      // Se for Enter ou Tab, processa o código acumulado
+      if (event.key === 'Enter' || event.key === 'Tab') {
+        if (inputBuffer.length >= 4) { // Códigos de barras geralmente têm pelo menos 4 dígitos
+          event.preventDefault()
+          handleBarcodeScanned(inputBuffer.trim())
+          return
+        }
+        inputBuffer = ''
+      } 
+      // Se for um caractere válido, adiciona ao buffer
+      else if (event.key.length === 1 && (event.key.match(/[0-9a-zA-Z]/) || event.key === '-' || event.key === '_')) {
+        inputBuffer += event.key
+      }
+    }
+
+    document.addEventListener('keypress', handleKeyPress)
+    
+    return () => {
+      document.removeEventListener('keypress', handleKeyPress)
+    }
+  }, [quickScanMode])
 
   const getStatusBadge = (produto: any) => {
     if ((produto.estoque_atual ?? 0) === 0) {
@@ -137,6 +189,14 @@ const EstoqueContent: React.FC = () => {
           >
             <Search className="h-4 w-4" />
             <span>Scanner</span>
+          </Button>
+          <Button
+            variant={quickScanMode ? "default" : "outline"}
+            onClick={() => setQuickScanMode(!quickScanMode)}
+            className="flex items-center space-x-2"
+          >
+            <Scan className="h-4 w-4" />
+            <span>{quickScanMode ? 'Modo Ativo' : 'Modo Leitor'}</span>
           </Button>
           <Button
             onClick={() => setShowMovimentacaoForm(true)}
@@ -237,6 +297,34 @@ const EstoqueContent: React.FC = () => {
 
         {/* Aba Produtos */}
         <TabsContent value="produtos" className="space-y-4">
+          {/* Indicador do Modo Leitor */}
+          {quickScanMode && (
+            <Card className="border-blue-200 bg-blue-50">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                    <Scan className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-blue-800">Modo Leitor de Código Ativo</p>
+                    <p className="text-sm text-blue-600">
+                      Use seu leitor de código de barras para buscar produtos automaticamente
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setQuickScanMode(false)}
+                    className="ml-auto text-blue-600 hover:text-blue-800"
+                  >
+                    Desativar
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
           {/* Filtros */}
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">

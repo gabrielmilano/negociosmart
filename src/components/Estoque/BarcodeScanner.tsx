@@ -126,6 +126,49 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
     }
   }
 
+  // Função para capturar entrada de teclado (máquinas de código de barras)
+  useEffect(() => {
+    if (!isOpen) return
+
+    let inputBuffer = ''
+    let lastInputTime = 0
+
+    const handleKeyPress = (event: KeyboardEvent) => {
+      const currentTime = Date.now()
+      
+      // Se passou mais de 100ms desde a última entrada, limpa o buffer
+      if (currentTime - lastInputTime > 100) {
+        inputBuffer = ''
+      }
+      
+      lastInputTime = currentTime
+
+      // Se for Enter, processa o código acumulado
+      if (event.key === 'Enter') {
+        if (inputBuffer.length >= 3) { // Códigos podem ter 3+ dígitos
+          event.preventDefault()
+          onScanSuccess(inputBuffer.trim())
+          onClose()
+          return
+        }
+        inputBuffer = ''
+      } 
+      // Se for um caractere válido, adiciona ao buffer
+      else if (event.key.length === 1 && (
+        event.key.match(/[0-9a-zA-Z]/) || 
+        ['-', '_', '.', '/', '+', '*'].includes(event.key)
+      )) {
+        inputBuffer += event.key
+      }
+    }
+
+    document.addEventListener('keypress', handleKeyPress)
+    
+    return () => {
+      document.removeEventListener('keypress', handleKeyPress)
+    }
+  }, [isOpen, onScanSuccess, onClose])
+
   if (!isOpen) return null
 
   return (
@@ -189,20 +232,31 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
                   <span>Flash</span>
                 </Button>
                 
-                {/* Botão para entrada manual */}
+                 {/* Botão para entrada manual */}
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleManualInput}
-                  className="bg-blue-50 border-blue-200 text-blue-700"
+                  className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
                 >
-                  Digitar Código
+                  ⌨️ Digitar Código
+                </Button>
+                
+                {/* Botão para fechar e usar modo leitor */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onClose}
+                  className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
+                >
+                  🔧 Usar Leitor USB
                 </Button>
               </div>
 
-              <div className="text-center text-sm text-muted-foreground">
-                <p>Aponte a câmera para o código de barras</p>
-                <p>A detecção será automática</p>
+              <div className="text-center text-sm text-muted-foreground space-y-1">
+                <p>📱 Aponte a câmera para o código de barras</p>
+                <p>⌨️ Use leitor de código ou digite manualmente</p>
+                <p className="text-xs">💡 Leitores USB detectados automaticamente</p>
               </div>
             </>
           )}

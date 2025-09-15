@@ -75,14 +75,21 @@ const App = () => (
                     </Layout>
                   </ProtectedRoute>
                 } />
-                <Route path="/estoque" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Estoque />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                 <Route path="/estoque" element={
+                   <ProtectedRoute>
+                     <Layout>
+                       <Estoque />
+                     </Layout>
+                   </ProtectedRoute>
+                 } />
+                 <Route path="/automations/inventory" element={
+                   <ProtectedRoute>
+                     <Layout>
+                       <Estoque />
+                     </Layout>
+                   </ProtectedRoute>
+                 } />
+                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
