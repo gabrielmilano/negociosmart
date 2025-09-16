@@ -222,7 +222,7 @@ export const HistoricoMovimentacoes: React.FC<HistoricoMovimentacoesProps> = ({ 
                           <div>
                             <p className="font-medium">{mov.produto_nome}</p>
                             <p className="text-sm text-muted-foreground">
-                              {mov.produtos?.codigo_interno}
+                              Código não informado
                             </p>
                           </div>
                         </td>

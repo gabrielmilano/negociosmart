@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { 
@@ -18,8 +17,7 @@ import {
   Save,
   X,
   Calculator,
-  Package,
-  Table
+  Package
 } from 'lucide-react'
 import { useEstoque } from '@/hooks/useEstoque'
 import { format } from 'date-fns'
@@ -378,7 +376,7 @@ export const InventarioFisico: React.FC = () => {
                               </td>
                               <td className="p-2">
                                 <span className="font-medium">
-                                  {item.quantidade_sistema} {item.produtos?.unidade_medida || 'UN'}
+                                  {item.quantidade_sistema} UN
                                 </span>
                               </td>
                               <td className="p-2">
@@ -391,7 +389,7 @@ export const InventarioFisico: React.FC = () => {
                                   />
                                 ) : (
                                   <span className="font-medium">
-                                    {item.quantidade_contada || '-'} {item.produtos?.unidade_medida || 'UN'}
+                                    {item.quantidade_contada || '-'} UN
                                   </span>
                                 )}
                               </td>
