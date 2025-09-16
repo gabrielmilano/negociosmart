@@ -83,6 +83,17 @@ export const ProdutoForm: React.FC<ProdutoFormProps> = ({
   }
 
   const onSubmit = (data: any) => {
+    // Validações de campos obrigatórios
+    if (!data.nome || data.nome.trim() === '') {
+      alert('Nome do produto é obrigatório')
+      return
+    }
+
+    if (!data.codigo_interno || data.codigo_interno.trim() === '') {
+      alert('Código interno é obrigatório')
+      return
+    }
+
     // Validações de estoque
     const estoqueAtual = Number(data.estoque_atual) || 0
     const estoqueMinimo = Number(data.estoque_minimo) || 0
@@ -154,6 +165,8 @@ export const ProdutoForm: React.FC<ProdutoFormProps> = ({
 
     const dadosCompletos = {
       ...data,
+      nome: data.nome.trim(),
+      codigo_interno: data.codigo_interno.trim(),
       estoque_atual: estoqueAtual,
       estoque_minimo: estoqueMinimo,
       preco_custo: precoCusto,
@@ -164,6 +177,8 @@ export const ProdutoForm: React.FC<ProdutoFormProps> = ({
       profundidade: profundidade,
       imagens: imagemUrl ? [imagemUrl] : []
     }
+    
+    console.log('Dados do produto a serem enviados:', dadosCompletos)
     onSave(dadosCompletos)
   }
 

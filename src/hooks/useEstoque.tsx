@@ -89,7 +89,7 @@ const EstoqueContext = createContext<EstoqueContextType | undefined>(undefined)
 
 export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string }> = ({ 
   children, 
-  empresaId 
+  empresaId: empresaIdProp 
 }) => {
   const [produtos, setProdutos] = useState<Produto[]>([])
   const [movimentacoes, setMovimentacoes] = useState<MovimentacaoEstoque[]>([])
@@ -98,7 +98,35 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
   const [inventarios, setInventarios] = useState<Inventario[]>([])
   const [inventarioItens, setInventarioItens] = useState<InventarioItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [empresaId, setEmpresaId] = useState<string | null>(empresaIdProp || null)
   const { user } = useAuth()
+
+  // Buscar empresa do usuário se não fornecida
+  const fetchUserCompany = useCallback(async () => {
+    if (!user || empresaIdProp) return
+
+    try {
+      const { data, error } = await supabase
+        .rpc('get_user_company_id', { user_id: user.id })
+
+      if (data && !error) {
+        setEmpresaId(data)
+      } else {
+        console.error('Erro ao buscar empresa do usuário:', error)
+        // Fallback para empresa demo se não conseguir buscar
+        setEmpresaId("empresa-demo-123")
+      }
+    } catch (error) {
+      console.error('Erro ao buscar empresa do usuário:', error)
+      setEmpresaId("empresa-demo-123")
+    }
+  }, [user, empresaIdProp])
+
+  useEffect(() => {
+    if (user && !empresaIdProp) {
+      fetchUserCompany()
+    }
+  }, [user, empresaIdProp, fetchUserCompany])
 
   // Buscar todos os produtos
   const fetchProdutos = useCallback(async () => {
@@ -143,12 +171,22 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
 
   // Criar novo produto
   const criarProduto = useCallback(async (dados: any) => {
-    if (!empresaId || !user) return null
+    if (!empresaId || !user) {
+      console.error('EmpresaId ou usuário não encontrado:', { empresaId, user: !!user })
+      toast.error('Erro: Empresa ou usuário não encontrado')
+      return null
+    }
 
     // Gerar código interno se não fornecido
     if (!dados.codigo_interno) {
       dados.codigo_interno = `PROD_${Date.now()}`
     }
+
+    console.log('Tentando criar produto:', {
+      dados,
+      empresaId,
+      userId: user.id
+    })
 
     const { data, error } = await supabase
       .from('produtos')
@@ -162,12 +200,13 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
       .single()
 
     if (data && !error) {
+      console.log('Produto criado com sucesso:', data)
       toast.success('Produto criado com sucesso!')
       await fetchProdutos()
       return data
     } else {
-      toast.error('Erro ao criar produto')
-      console.error(error)
+      console.error('Erro ao criar produto:', error)
+      toast.error(`Erro ao criar produto: ${error?.message || 'Erro desconhecido'}`)
       return null
     }
   }, [empresaId, user, fetchProdutos])
@@ -391,7 +430,16 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
 
   // Criar categoria
   const criarCategoria = useCallback(async (dados: any) => {
-    if (!empresaId) return null
+    if (!empresaId) {
+      console.error('EmpresaId não encontrado para criar categoria')
+      toast.error('Erro: Empresa não encontrada')
+      return null
+    }
+
+    console.log('Tentando criar categoria:', {
+      dados,
+      empresaId
+    })
 
     const { data, error } = await supabase
       .from('categorias_produto')
@@ -403,11 +451,13 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
       .single()
 
     if (data && !error) {
+      console.log('Categoria criada com sucesso:', data)
       toast.success('Categoria criada!')
       await fetchCategorias()
       return data
     } else {
-      toast.error('Erro ao criar categoria')
+      console.error('Erro ao criar categoria:', error)
+      toast.error(`Erro ao criar categoria: ${error?.message || 'Erro desconhecido'}`)
       return null
     }
   }, [empresaId, fetchCategorias])

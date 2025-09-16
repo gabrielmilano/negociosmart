@@ -41,7 +41,22 @@ export const CategoriaForm: React.FC<CategoriaFormProps> = ({
   const corAtual = watch('cor')
 
   const onSubmit = (data: any) => {
-    onSave(data)
+    // Validações de campos obrigatórios
+    if (!data.nome || data.nome.trim() === '') {
+      alert('Nome da categoria é obrigatório')
+      return
+    }
+
+    const dadosCompletos = {
+      ...data,
+      nome: data.nome.trim(),
+      descricao: data.descricao?.trim() || null,
+      cor: data.cor || '#6B7280',
+      icone: data.icone || '📦'
+    }
+    
+    console.log('Dados da categoria a serem enviados:', dadosCompletos)
+    onSave(dadosCompletos)
   }
 
   return (

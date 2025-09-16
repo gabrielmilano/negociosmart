@@ -747,12 +747,8 @@ const EstoqueContent: React.FC = () => {
 }
 
 export default function Estoque() {
-  // Por enquanto, vamos usar um ID de empresa fixo
-  // Em produção, isso viria do contexto do usuário logado
-  const empresaId = "empresa-demo-123"
-
   return (
-    <EstoqueProvider empresaId={empresaId}>
+    <EstoqueProvider>
       <EstoqueContent />
     </EstoqueProvider>
   )
