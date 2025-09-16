@@ -12,6 +12,9 @@ import { MovimentacaoForm } from '@/components/Estoque/MovimentacaoForm'
 import { BarcodeScanner } from '@/components/Estoque/BarcodeScanner'
 import { CategoriaForm } from '@/components/Estoque/CategoriaForm'
 import { FornecedorForm } from '@/components/Estoque/FornecedorForm'
+import { HistoricoMovimentacoes } from '@/components/Estoque/HistoricoMovimentacoes'
+import { RelatoriosEstoque } from '@/components/Estoque/RelatoriosEstoque'
+import { InventarioFisico } from '@/components/Estoque/InventarioFisico'
 
 const EstoqueContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState('produtos')
@@ -36,7 +39,9 @@ const EstoqueContent: React.FC = () => {
     criarProduto,
     atualizarProduto,
     criarCategoria,
+    atualizarCategoria,
     criarFornecedor,
+    atualizarFornecedor,
     registrarMovimentacao,
     buscarProdutoPorCodigo,
     getRelatorioDashboard
@@ -83,8 +88,7 @@ const EstoqueContent: React.FC = () => {
 
   const handleSaveCategoria = async (dados: any) => {
     if (categoriaEditando) {
-      // TODO: Implementar atualização de categoria
-      console.log('Atualizar categoria:', categoriaEditando.id, dados)
+      await atualizarCategoria(categoriaEditando.id, dados)
     } else {
       await criarCategoria(dados)
     }
@@ -94,8 +98,7 @@ const EstoqueContent: React.FC = () => {
 
   const handleSaveFornecedor = async (dados: any) => {
     if (fornecedorEditando) {
-      // TODO: Implementar atualização de fornecedor
-      console.log('Atualizar fornecedor:', fornecedorEditando.id, dados)
+      await atualizarFornecedor(fornecedorEditando.id, dados)
     } else {
       await criarFornecedor(dados)
     }
@@ -362,11 +365,12 @@ const EstoqueContent: React.FC = () => {
 
       {/* Tabs de Conteúdo */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="produtos">Produtos</TabsTrigger>
           <TabsTrigger value="categorias">Categorias</TabsTrigger>
           <TabsTrigger value="fornecedores">Fornecedores</TabsTrigger>
           <TabsTrigger value="movimentacoes">Movimentações</TabsTrigger>
+          <TabsTrigger value="inventario">Inventário</TabsTrigger>
           <TabsTrigger value="relatorios">Relatórios</TabsTrigger>
         </TabsList>
 
@@ -709,24 +713,17 @@ const EstoqueContent: React.FC = () => {
 
         {/* Aba Movimentações */}
         <TabsContent value="movimentacoes" className="space-y-4">
-          <Card className="p-8 text-center">
-            <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Histórico de Movimentações</h3>
-            <p className="text-muted-foreground">
-              Em breve você poderá visualizar todo o histórico de movimentações
-            </p>
-          </Card>
+          <HistoricoMovimentacoes />
+        </TabsContent>
+
+        {/* Aba Inventário Físico */}
+        <TabsContent value="inventario" className="space-y-4">
+          <InventarioFisico />
         </TabsContent>
 
         {/* Aba Relatórios */}
         <TabsContent value="relatorios" className="space-y-4">
-          <Card className="p-8 text-center">
-            <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Relatórios e Analytics</h3>
-            <p className="text-muted-foreground">
-              Relatórios detalhados de estoque, movimentações e performance
-            </p>
-          </Card>
+          <RelatoriosEstoque />
         </TabsContent>
       </Tabs>
 
