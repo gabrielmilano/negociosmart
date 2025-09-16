@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
-import { Camera, Package, DollarSign, MapPin, Calendar, Image, Link, X, Plus } from 'lucide-react'
+import { Camera, Package, DollarSign, MapPin, Calendar, Image, X, Plus } from 'lucide-react'
 import { BarcodeScanner } from './BarcodeScanner'
 import { useEstoque } from '@/hooks/useEstoque'
 

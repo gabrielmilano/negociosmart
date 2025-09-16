@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Plus, Package, Search, Filter, BarChart3, AlertTriangle, Calendar, TrendingUp, TrendingDown, Scan, Tag, Truck, Sync } from 'lucide-react'
+import { Plus, Package, Search, BarChart3, AlertTriangle, Calendar, TrendingUp, Scan, Tag, Truck, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -294,7 +294,7 @@ const EstoqueContent: React.FC = () => {
             onClick={sincronizarEstoque}
             disabled={loading}
           >
-            <Sync className="mr-2 h-4 w-4" />
+            <RefreshCw className="mr-2 h-4 w-4" />
             Sincronizar Estoque
           </Button>
         </div>

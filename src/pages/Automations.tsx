@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Filter, Search, Star, Package, Calendar, Cloud, Search as SearchIcon, RotateCw, Clock, AlertTriangle, TrendingUp } from "lucide-react";
+import { Plus, Filter, Search, Star, Package, Calendar, Cloud, RotateCw, Clock, AlertTriangle, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,7 +44,7 @@ const automationTypes = [
     id: "competitors",
     name: "Monitor de Concorrência",
     description: "Acompanhe preços e promoções da concorrência", 
-    icon: SearchIcon,
+    icon: Search,
     color: "bg-gradient-destructive",
     count: 2
   }
@@ -98,7 +98,7 @@ const allAutomations = [
     status: "error" as const,
     lastRun: "há 3 horas",
     executions: 201,
-    icon: SearchIcon,
+    icon: Search,
     description: "Monitora preços da concorrência e alerta sobre mudanças significativas"
   },
   {
