@@ -72,6 +72,7 @@ interface EstoqueContextType {
   fetchInventarioItens: (inventarioId: string) => Promise<void>
   atualizarItemInventario: (itemId: string, quantidade: number, observacoes?: string) => Promise<boolean>
   aplicarInventario: (inventarioId: string) => Promise<boolean>
+  sincronizarEstoque: () => Promise<boolean>
   
   // Relatórios
   getRelatorioDashboard: () => {
@@ -272,7 +273,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
         data_movimentacao: new Date().toISOString()
       }
 
-      // Usar transação para garantir consistência
+      // Inserir movimentação - o trigger do banco irá atualizar o estoque automaticamente
       const { error: movimentacaoError } = await supabase
         .from('movimentacoes_estoque')
         .insert(movimentacaoData)
@@ -283,26 +284,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
         return false
       }
 
-      // Atualizar estoque do produto
-      const { error: updateError } = await supabase
-        .from('produtos')
-        .update({
-          estoque_atual: quantidadePosterior,
-          data_ultima_entrada: dados.tipo === 'entrada' ? new Date().toISOString() : undefined,
-          data_ultima_saida: dados.tipo === 'saida' ? new Date().toISOString() : undefined,
-          atualizado_em: new Date().toISOString(),
-          atualizado_por: user.id
-        })
-        .eq('id', dados.produto_id)
-        .eq('empresa_id', empresaId)
-
-      if (updateError) {
-        toast.error('Erro ao atualizar estoque do produto')
-        console.error(updateError)
-        return false
-      }
-
-      // Verificar alertas de estoque baixo
+      // Verificar alertas de estoque baixo após a movimentação
       const estoqueMinimo = produto.estoque_minimo ?? 0
       if (quantidadePosterior <= estoqueMinimo && quantidadePosterior > 0) {
         toast.warning(`Atenção: Estoque baixo! Restam apenas ${quantidadePosterior} unidades`)
@@ -661,6 +643,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
       }
 
       // Criar movimentações de ajuste para cada item
+      // O trigger do banco irá atualizar o estoque automaticamente
       for (const item of itensComDiferenca) {
         const { error } = await supabase
           .from('movimentacoes_estoque')
@@ -669,7 +652,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
             produto_id: item.produto_id,
             tipo: 'ajuste',
             subtipo: 'inventario',
-            quantidade: Math.abs(item.diferenca || 0),
+            quantidade: item.quantidade_contada || 0, // Para ajuste, quantidade = quantidade final
             quantidade_anterior: item.quantidade_sistema,
             quantidade_posterior: item.quantidade_contada || 0,
             motivo: `Ajuste por inventário físico - ${item.observacoes || 'Sem observações'}`,
@@ -680,23 +663,8 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
 
         if (error) {
           console.error('Erro ao criar movimentação:', error)
-        }
-      }
-
-      // Atualizar estoque dos produtos
-      for (const item of itensComDiferenca) {
-        const { error } = await supabase
-          .from('produtos')
-          .update({
-            estoque_atual: item.quantidade_contada || 0,
-            atualizado_em: new Date().toISOString(),
-            atualizado_por: user.id
-          })
-          .eq('id', item.produto_id)
-          .eq('empresa_id', empresaId)
-
-        if (error) {
-          console.error('Erro ao atualizar estoque:', error)
+          toast.error(`Erro ao ajustar produto ${item.produto_nome}`)
+          return false
         }
       }
 
@@ -711,6 +679,88 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
       return false
     }
   }, [empresaId, user, inventarioItens, fetchProdutos, fetchTodasMovimentacoes])
+
+  // Sincronizar estoque (corrigir inconsistências)
+  const sincronizarEstoque = useCallback(async () => {
+    if (!empresaId) return false
+
+    try {
+      // Buscar todos os produtos
+      const { data: produtos, error: produtosError } = await supabase
+        .from('produtos')
+        .select('id, nome, estoque_atual')
+        .eq('empresa_id', empresaId)
+        .eq('ativo', true)
+
+      if (produtosError) {
+        console.error('Erro ao buscar produtos:', produtosError)
+        return false
+      }
+
+      let inconsistencias = 0
+
+      // Para cada produto, calcular estoque real baseado nas movimentações
+      for (const produto of produtos || []) {
+        const { data: movimentacoes, error: movError } = await supabase
+          .from('movimentacoes_estoque')
+          .select('tipo, quantidade')
+          .eq('produto_id', produto.id)
+          .eq('empresa_id', empresaId)
+          .order('data_movimentacao', { ascending: true })
+
+        if (movError) {
+          console.error(`Erro ao buscar movimentações do produto ${produto.id}:`, movError)
+          continue
+        }
+
+        // Calcular estoque real
+        let estoqueReal = 0
+        for (const mov of movimentacoes || []) {
+          if (mov.tipo === 'entrada') {
+            estoqueReal += mov.quantidade
+          } else if (mov.tipo === 'saida') {
+            estoqueReal -= mov.quantidade
+          } else if (mov.tipo === 'ajuste') {
+            estoqueReal = mov.quantidade
+          }
+        }
+
+        // Verificar se há inconsistência
+        if (produto.estoque_atual !== estoqueReal) {
+          // Atualizar estoque do produto
+          const { error: updateError } = await supabase
+            .from('produtos')
+            .update({ 
+              estoque_atual: estoqueReal,
+              atualizado_em: new Date().toISOString()
+            })
+            .eq('id', produto.id)
+            .eq('empresa_id', empresaId)
+
+          if (updateError) {
+            console.error(`Erro ao corrigir estoque do produto ${produto.nome}:`, updateError)
+          } else {
+            inconsistencias++
+            console.log(`Estoque corrigido para ${produto.nome}: ${produto.estoque_atual} → ${estoqueReal}`)
+          }
+        }
+      }
+
+      if (inconsistencias > 0) {
+        toast.success(`${inconsistencias} produtos tiveram o estoque corrigido`)
+        await fetchProdutos()
+      } else {
+        toast.info('Estoque já está sincronizado')
+      }
+
+      return true
+
+    } catch (error) {
+      console.error('Erro ao sincronizar estoque:', error)
+      toast.error('Erro ao sincronizar estoque')
+      return false
+    }
+  }, [empresaId, fetchProdutos])
 
   // Relatórios
   const getRelatorioDashboard = useCallback(() => {
@@ -777,6 +827,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
       fetchInventarioItens,
       atualizarItemInventario,
       aplicarInventario,
+      sincronizarEstoque,
       getRelatorioDashboard
     }}>
       {children}

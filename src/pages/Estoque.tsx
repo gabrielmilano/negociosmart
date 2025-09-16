@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Plus, Package, Search, Filter, BarChart3, AlertTriangle, Calendar, TrendingUp, TrendingDown, Scan, Tag, Truck } from 'lucide-react'
+import { Plus, Package, Search, Filter, BarChart3, AlertTriangle, Calendar, TrendingUp, TrendingDown, Scan, Tag, Truck, Sync } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -44,6 +44,7 @@ const EstoqueContent: React.FC = () => {
     atualizarFornecedor,
     registrarMovimentacao,
     buscarProdutoPorCodigo,
+    sincronizarEstoque,
     getRelatorioDashboard
   } = useEstoque()
 
@@ -287,6 +288,14 @@ const EstoqueContent: React.FC = () => {
           >
             <Plus className="mr-2 h-4 w-4" />
             Novo Produto
+          </Button>
+          <Button
+            variant="outline"
+            onClick={sincronizarEstoque}
+            disabled={loading}
+          >
+            <Sync className="mr-2 h-4 w-4" />
+            Sincronizar Estoque
           </Button>
         </div>
       </div>

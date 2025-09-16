@@ -128,11 +128,41 @@ export const MovimentacaoForm: React.FC<MovimentacaoFormProps> = ({
       return
     }
 
+    const quantidade = Number(data.quantidade)
+    const valorUnitario = Number(data.valor_unitario)
+
+    // Validações adicionais
+    if (quantidade <= 0) {
+      alert('Quantidade deve ser maior que zero')
+      return
+    }
+
+    if (quantidade > 999999) {
+      alert('Quantidade muito alta. Máximo permitido: 999.999')
+      return
+    }
+
+    if (valorUnitario < 0) {
+      alert('Valor unitário não pode ser negativo')
+      return
+    }
+
+    if (valorUnitario > 999999.99) {
+      alert('Valor unitário muito alto. Máximo permitido: R$ 999.999,99')
+      return
+    }
+
+    // Validação específica para saídas
+    if (tipoSelecionado === 'saida' && quantidade > (produtoSelecionado.estoque_atual || 0)) {
+      alert(`Estoque insuficiente! Disponível: ${produtoSelecionado.estoque_atual || 0}`)
+      return
+    }
+
     const dadosMovimentacao = {
       produto_id: produtoSelecionado.id,
       tipo: tipoSelecionado,
-      quantidade: Number(data.quantidade),
-      valor_unitario: Number(data.valor_unitario),
+      quantidade: quantidade,
+      valor_unitario: valorUnitario > 0 ? valorUnitario : undefined,
       motivo: data.motivo,
       observacoes: data.observacoes,
       documento_numero: data.documento_numero,

@@ -83,8 +83,85 @@ export const ProdutoForm: React.FC<ProdutoFormProps> = ({
   }
 
   const onSubmit = (data: any) => {
+    // Validações de estoque
+    const estoqueAtual = Number(data.estoque_atual) || 0
+    const estoqueMinimo = Number(data.estoque_minimo) || 0
+
+    if (estoqueAtual < 0) {
+      alert('Estoque atual não pode ser negativo')
+      return
+    }
+
+    if (estoqueMinimo < 0) {
+      alert('Estoque mínimo não pode ser negativo')
+      return
+    }
+
+    if (estoqueAtual > 999999) {
+      alert('Estoque atual muito alto. Máximo permitido: 999.999')
+      return
+    }
+
+    // Validações de preços
+    const precoCusto = Number(data.preco_custo) || 0
+    const precoVenda = Number(data.preco_venda) || 0
+
+    if (precoCusto < 0) {
+      alert('Preço de custo não pode ser negativo')
+      return
+    }
+
+    if (precoVenda < 0) {
+      alert('Preço de venda não pode ser negativo')
+      return
+    }
+
+    if (precoCusto > 999999.99) {
+      alert('Preço de custo muito alto. Máximo permitido: R$ 999.999,99')
+      return
+    }
+
+    if (precoVenda > 999999.99) {
+      alert('Preço de venda muito alto. Máximo permitido: R$ 999.999,99')
+      return
+    }
+
+    // Validações de dimensões
+    const peso = Number(data.peso) || 0
+    const largura = Number(data.largura) || 0
+    const altura = Number(data.altura) || 0
+    const profundidade = Number(data.profundidade) || 0
+
+    if (peso < 0) {
+      alert('Peso não pode ser negativo')
+      return
+    }
+
+    if (largura < 0) {
+      alert('Largura não pode ser negativa')
+      return
+    }
+
+    if (altura < 0) {
+      alert('Altura não pode ser negativa')
+      return
+    }
+
+    if (profundidade < 0) {
+      alert('Profundidade não pode ser negativa')
+      return
+    }
+
     const dadosCompletos = {
       ...data,
+      estoque_atual: estoqueAtual,
+      estoque_minimo: estoqueMinimo,
+      preco_custo: precoCusto,
+      preco_venda: precoVenda,
+      peso: peso,
+      largura: largura,
+      altura: altura,
+      profundidade: profundidade,
       imagens: imagemUrl ? [imagemUrl] : []
     }
     onSave(dadosCompletos)

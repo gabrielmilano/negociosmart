@@ -422,3 +422,4 @@ export const RelatoriosEstoque: React.FC = () => {
     </div>
   )
 }
+
