@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, createContext, useContext, ReactNode } from 'react'
-import { supabase } from '@/integrations/supabase/client'
+import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import { toast } from 'sonner'
 import type { Database } from '@/integrations/supabase/types'
@@ -106,25 +106,43 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
     if (!user || empresaIdProp) return
 
     try {
-      const { data, error } = await supabase
-        .rpc('get_user_company_id', { user_id: user.id })
+      // Buscar empresa do usuário através da tabela usuarios_empresa
+      const { data: usuarioEmpresa, error } = await supabase
+        .from('usuarios_empresa')
+        .select('empresa_id')
+        .eq('usuario_id', user.id)
+        .eq('ativo', true)
+        .single()
 
-      if (data && !error) {
-        setEmpresaId(data)
+      if (usuarioEmpresa && !error) {
+        setEmpresaId(usuarioEmpresa.empresa_id)
       } else {
-        console.error('Erro ao buscar empresa do usuário:', error)
-        // Fallback para empresa demo se não conseguir buscar
-        setEmpresaId("empresa-demo-123")
+        // Se não encontrou, buscar empresa onde o usuário é proprietário
+        const { data: empresa, error: empresaError } = await supabase
+          .from('empresas')
+          .select('id')
+          .eq('usuario_proprietario_id', user.id)
+          .single()
+
+        if (empresa && !empresaError) {
+          setEmpresaId(empresa.id)
+        } else {
+          console.error('Erro ao buscar empresa do usuário:', error)
+          toast.error('Nenhuma empresa encontrada para este usuário')
+        }
       }
     } catch (error) {
       console.error('Erro ao buscar empresa do usuário:', error)
-      setEmpresaId("empresa-demo-123")
+      toast.error('Erro ao carregar dados da empresa')
     }
   }, [user, empresaIdProp])
 
   useEffect(() => {
     if (user && !empresaIdProp) {
       fetchUserCompany()
+    }
+    if (empresaIdProp) {
+      setEmpresaId(empresaIdProp)
     }
   }, [user, empresaIdProp, fetchUserCompany])
 
@@ -350,7 +368,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
       .from('movimentacoes_estoque')
       .select(`
         *,
-        produtos!inner(nome, codigo_interno, codigo_barras)
+        produtos(nome, codigo_interno, codigo_barras)
       `)
       .eq('empresa_id', empresaId)
       .eq('produto_id', produtoId)
@@ -380,7 +398,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
       .from('movimentacoes_estoque')
       .select(`
         *,
-        produtos!inner(nome, codigo_interno, codigo_barras, categoria_nome: categorias_produto(nome))
+        produtos(nome, codigo_interno, codigo_barras)
       `)
       .eq('empresa_id', empresaId)
       .order('data_movimentacao', { ascending: false })
@@ -406,7 +424,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
         ...mov,
         usuario_nome: 'Usuário',
         produto_nome: mov.produtos?.nome || 'Produto não encontrado',
-        categoria_nome: mov.produtos?.categoria_nome?.nome || 'Sem categoria'
+        categoria_nome: 'Sem categoria'
       }))
       setMovimentacoes(movimentacoesFormatadas)
     }
@@ -637,7 +655,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
       .from('inventario_itens')
       .select(`
         *,
-        produtos!inner(nome, codigo_interno, codigo_barras, unidade_medida)
+        produtos(nome, codigo_interno, codigo_barras, unidade_medida)
       `)
       .eq('inventario_id', inventarioId)
       .order('produtos(nome)')

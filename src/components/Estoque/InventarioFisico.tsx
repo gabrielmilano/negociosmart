@@ -18,7 +18,8 @@ import {
   Save,
   X,
   Calculator,
-  Package
+  Package,
+  Table
 } from 'lucide-react'
 import { useEstoque } from '@/hooks/useEstoque'
 import { format } from 'date-fns'
@@ -353,34 +354,34 @@ export const InventarioFisico: React.FC = () => {
                     </p>
                   ) : (
                     <div className="overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Produto</TableHead>
-                            <TableHead>Estoque Sistema</TableHead>
-                            <TableHead>Contado</TableHead>
-                            <TableHead>Diferença</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Ações</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="text-left p-2">Produto</th>
+                            <th className="text-left p-2">Estoque Sistema</th>
+                            <th className="text-left p-2">Contado</th>
+                            <th className="text-left p-2">Diferença</th>
+                            <th className="text-left p-2">Status</th>
+                            <th className="text-left p-2">Ações</th>
+                          </tr>
+                        </thead>
+                        <tbody>
                           {inventarioItens.map((item) => (
-                            <TableRow key={item.id}>
-                              <TableCell>
+                            <tr key={item.id} className="border-b">
+                              <td className="p-2">
                                 <div>
                                   <p className="font-medium">{item.produto_nome}</p>
                                   <p className="text-sm text-muted-foreground">
                                     {item.produto_codigo}
                                   </p>
                                 </div>
-                              </TableCell>
-                              <TableCell>
+                              </td>
+                              <td className="p-2">
                                 <span className="font-medium">
                                   {item.quantidade_sistema} {item.produtos?.unidade_medida || 'UN'}
                                 </span>
-                              </TableCell>
-                              <TableCell>
+                              </td>
+                              <td className="p-2">
                                 {editandoItem === item.id ? (
                                   <Input
                                     type="number"
@@ -393,18 +394,18 @@ export const InventarioFisico: React.FC = () => {
                                     {item.quantidade_contada || '-'} {item.produtos?.unidade_medida || 'UN'}
                                   </span>
                                 )}
-                              </TableCell>
-                              <TableCell>
+                              </td>
+                              <td className="p-2">
                                 {getDiferencaBadge(item.diferenca || 0)}
-                              </TableCell>
-                              <TableCell>
+                              </td>
+                              <td className="p-2">
                                 {item.quantidade_contada !== null ? (
                                   <Badge variant="outline">Contado</Badge>
                                 ) : (
                                   <Badge variant="secondary">Pendente</Badge>
                                 )}
-                              </TableCell>
-                              <TableCell>
+                              </td>
+                              <td className="p-2">
                                 {editandoItem === item.id ? (
                                   <div className="flex space-x-1">
                                     <Button
@@ -430,11 +431,11 @@ export const InventarioFisico: React.FC = () => {
                                     <Edit className="h-3 w-3" />
                                   </Button>
                                 )}
-                              </TableCell>
-                            </TableRow>
+                              </td>
+                            </tr>
                           ))}
-                        </TableBody>
-                      </Table>
+                        </tbody>
+                      </table>
                     </div>
                   )}
                 </CardContent>

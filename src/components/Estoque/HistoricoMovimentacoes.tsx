@@ -5,7 +5,6 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ArrowUp, ArrowDown, RotateCcw, Search, Filter, Calendar, Package, FileText, User } from 'lucide-react'
 import { useEstoque } from '@/hooks/useEstoque'
 import { format } from 'date-fns'
@@ -184,83 +183,83 @@ export const HistoricoMovimentacoes: React.FC<HistoricoMovimentacoesProps> = ({ 
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Tipo</TableHead>
-                    <TableHead>Produto</TableHead>
-                    <TableHead>Quantidade</TableHead>
-                    <TableHead>Estoque Anterior</TableHead>
-                    <TableHead>Estoque Posterior</TableHead>
-                    <TableHead>Valor Unit.</TableHead>
-                    <TableHead>Valor Total</TableHead>
-                    <TableHead>Motivo</TableHead>
-                    <TableHead>Documento</TableHead>
-                    <TableHead>Usuário</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left p-2">Data</th>
+                    <th className="text-left p-2">Tipo</th>
+                    <th className="text-left p-2">Produto</th>
+                    <th className="text-left p-2">Quantidade</th>
+                    <th className="text-left p-2">Estoque Anterior</th>
+                    <th className="text-left p-2">Estoque Posterior</th>
+                    <th className="text-left p-2">Valor Unit.</th>
+                    <th className="text-left p-2">Valor Total</th>
+                    <th className="text-left p-2">Motivo</th>
+                    <th className="text-left p-2">Documento</th>
+                    <th className="text-left p-2">Usuário</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {movimentacoesFiltradas.map((mov) => {
                     const tipoInfo = getTipoInfo(mov.tipo)
                     const IconeTipo = tipoInfo.icon
                     
                     return (
-                      <TableRow key={mov.id}>
-                        <TableCell>
+                      <tr key={mov.id} className="border-b hover:bg-muted/50">
+                        <td className="p-2">
                           {mov.data_movimentacao 
                             ? format(new Date(mov.data_movimentacao), 'dd/MM/yyyy HH:mm', { locale: ptBR })
                             : '-'
                           }
-                        </TableCell>
-                        <TableCell>
+                        </td>
+                        <td className="p-2">
                           <div className="flex items-center space-x-2">
                             <IconeTipo className={`h-4 w-4 ${tipoInfo.color}`} />
                             <span className="font-medium">{tipoInfo.label}</span>
                           </div>
-                        </TableCell>
-                        <TableCell>
+                        </td>
+                        <td className="p-2">
                           <div>
                             <p className="font-medium">{mov.produto_nome}</p>
                             <p className="text-sm text-muted-foreground">
                               {mov.produtos?.codigo_interno}
                             </p>
                           </div>
-                        </TableCell>
-                        <TableCell>
+                        </td>
+                        <td className="p-2">
                           <Badge variant={mov.tipo === 'entrada' ? 'default' : mov.tipo === 'saida' ? 'destructive' : 'secondary'}>
                             {mov.tipo === 'entrada' ? '+' : mov.tipo === 'saida' ? '-' : '='} {mov.quantidade}
                           </Badge>
-                        </TableCell>
-                        <TableCell>{mov.quantidade_anterior}</TableCell>
-                        <TableCell>
+                        </td>
+                        <td className="p-2">{mov.quantidade_anterior}</td>
+                        <td className="p-2">
                           <span className="font-medium">{mov.quantidade_posterior}</span>
-                        </TableCell>
-                        <TableCell>
+                        </td>
+                        <td className="p-2">
                           {mov.valor_unitario ? `R$ ${mov.valor_unitario.toFixed(2)}` : '-'}
-                        </TableCell>
-                        <TableCell>
+                        </td>
+                        <td className="p-2">
                           {mov.valor_total ? `R$ ${mov.valor_total.toFixed(2)}` : '-'}
-                        </TableCell>
-                        <TableCell>
+                        </td>
+                        <td className="p-2">
                           <span className="text-sm">{mov.motivo}</span>
-                        </TableCell>
-                        <TableCell>
+                        </td>
+                        <td className="p-2">
                           {mov.documento_numero ? (
                             <Badge variant="outline">{mov.documento_numero}</Badge>
                           ) : '-'}
-                        </TableCell>
-                        <TableCell>
+                        </td>
+                        <td className="p-2">
                           <div className="flex items-center space-x-2">
                             <User className="h-4 w-4 text-muted-foreground" />
                             <span className="text-sm">{mov.usuario_nome}</span>
                           </div>
-                        </TableCell>
-                      </TableRow>
+                        </td>
+                      </tr>
                     )
                   })}
-                </TableBody>
-              </Table>
+                </tbody>
+              </table>
             </div>
           )}
         </CardContent>

@@ -381,7 +381,7 @@ export const MovimentacaoForm: React.FC<MovimentacaoFormProps> = ({
             <Button 
               type="submit" 
               disabled={!produtoSelecionado}
-              className={`${tipoAtual?.bgColor} ${tipoAtual?.color} border-0`}
+              className="bg-gradient-primary"
             >
               Registrar {tipoAtual?.label}
             </Button>
