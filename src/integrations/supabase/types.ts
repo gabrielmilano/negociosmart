@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      ambientes_empresa: {
+        Row: {
+          ativo: boolean | null
+          atualizado_em: string | null
+          configuracoes: Json | null
+          criado_em: string | null
+          descricao: string | null
+          empresa_id: string
+          id: string
+          nome: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          atualizado_em?: string | null
+          configuracoes?: Json | null
+          criado_em?: string | null
+          descricao?: string | null
+          empresa_id: string
+          id?: string
+          nome: string
+        }
+        Update: {
+          ativo?: boolean | null
+          atualizado_em?: string | null
+          configuracoes?: Json | null
+          criado_em?: string | null
+          descricao?: string | null
+          empresa_id?: string
+          id?: string
+          nome?: string
+        }
+        Relationships: []
+      }
       automacoes: {
         Row: {
           atualizado_em: string
@@ -122,6 +155,7 @@ export type Database = {
           limites: Json | null
           nome: string
           plano: string | null
+          tipo_empresa: string | null
           tipo_negocio: string
           usuario_proprietario_id: string
         }
@@ -136,6 +170,7 @@ export type Database = {
           limites?: Json | null
           nome: string
           plano?: string | null
+          tipo_empresa?: string | null
           tipo_negocio: string
           usuario_proprietario_id: string
         }
@@ -150,6 +185,7 @@ export type Database = {
           limites?: Json | null
           nome?: string
           plano?: string | null
+          tipo_empresa?: string | null
           tipo_negocio?: string
           usuario_proprietario_id?: string
         }
@@ -554,6 +590,84 @@ export type Database = {
           },
         ]
       }
+      relacionamentos_empresa: {
+        Row: {
+          aprovado_em: string | null
+          aprovado_por: string | null
+          criado_em: string | null
+          fornecedor_id: string
+          id: string
+          loja_id: string
+          observacoes: string | null
+          permissoes: Json | null
+          status: string | null
+        }
+        Insert: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          criado_em?: string | null
+          fornecedor_id: string
+          id?: string
+          loja_id: string
+          observacoes?: string | null
+          permissoes?: Json | null
+          status?: string | null
+        }
+        Update: {
+          aprovado_em?: string | null
+          aprovado_por?: string | null
+          criado_em?: string | null
+          fornecedor_id?: string
+          id?: string
+          loja_id?: string
+          observacoes?: string | null
+          permissoes?: Json | null
+          status?: string | null
+        }
+        Relationships: []
+      }
+      tokens_ambiente: {
+        Row: {
+          ambiente_id: string
+          ativo: boolean | null
+          criado_em: string | null
+          criado_por: string
+          expires_at: string | null
+          id: string
+          nome: string
+          permissoes: Json | null
+          tipo: string | null
+          token: string
+          ultimo_uso: string | null
+        }
+        Insert: {
+          ambiente_id: string
+          ativo?: boolean | null
+          criado_em?: string | null
+          criado_por: string
+          expires_at?: string | null
+          id?: string
+          nome: string
+          permissoes?: Json | null
+          tipo?: string | null
+          token: string
+          ultimo_uso?: string | null
+        }
+        Update: {
+          ambiente_id?: string
+          ativo?: boolean | null
+          criado_em?: string | null
+          criado_por?: string
+          expires_at?: string | null
+          id?: string
+          nome?: string
+          permissoes?: Json | null
+          tipo?: string | null
+          token?: string
+          ultimo_uso?: string | null
+        }
+        Relationships: []
+      }
       usuarios: {
         Row: {
           avatar_url: string | null
@@ -734,6 +848,10 @@ export type Database = {
       }
     }
     Functions: {
+      generate_api_token: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_user_company_id: {
         Args: { user_id: string }
         Returns: string
