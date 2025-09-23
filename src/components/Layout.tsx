@@ -23,7 +23,12 @@ export function Layout({ children }: LayoutProps) {
   const notificationCount = 3; // Simulação
 
   const handleLogout = async () => {
-    await logout();
+    try {
+      await logout();
+      // Não é necessário navegar manualmente, o useEffect no ProtectedRoute já fará isso
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   };
 
   const getInitials = (name: string) => {

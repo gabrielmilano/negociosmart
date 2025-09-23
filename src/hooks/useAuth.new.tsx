@@ -26,7 +26,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
-  const [usuario, setUsuario] = useState<any | null>(null)
+  const [usuario, setUsuario] = useState<Usuario | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -54,19 +54,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [])
 
   const fetchUserProfile = async (userId: string) => {
-    const { data, error } = await supabase
-      .from('usuarios')
-      .select('*')
-      .eq('user_id', userId)
-      .maybeSingle()
-
-    if (data && !error) {
-      setUsuario(data)
-      // Update last access
-      await supabase
+    try {
+      const { data, error } = await supabase
         .from('usuarios')
-        .update({ ultimo_acesso: new Date().toISOString() })
+        .select('*')
         .eq('user_id', userId)
+        .maybeSingle()
+
+      if (error) {
+        throw error
+      }
+
+      if (data) {
+        setUsuario(data)
+        // Update last access
+        await supabase
+          .from('usuarios')
+          .update({ ultimo_acesso: new Date().toISOString() })
+          .eq('user_id', userId)
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error)
+      setUsuario(null)
     }
   }
 
@@ -136,7 +145,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const logout = async () => {
-    await supabase.auth.signOut()
+    try {
+      await supabase.auth.signOut()
+    } catch (error) {
+      console.error('Error during logout:', error)
+    }
   }
 
   return (
