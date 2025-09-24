@@ -29,24 +29,8 @@ export const router = createBrowserRouter([
       {
         path: '/estoque',
         element: (
-          <ProtectedRoute requiredRole="eletrica">
+          <ProtectedRoute>
             <Estoque />
-          </ProtectedRoute>
-        )
-      },
-      {
-        path: '/eletrica/agendamento',
-        element: (
-          <ProtectedRoute requiredRole="eletrica">
-            <Agendamento />
-          </ProtectedRoute>
-        )
-      },
-      {
-        path: '/fornecedor/pedidos',
-        element: (
-          <ProtectedRoute requiredRole="fornecedor">
-            <PedidosFornecedor />
           </ProtectedRoute>
         )
       },

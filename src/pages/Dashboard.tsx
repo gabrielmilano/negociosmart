@@ -1,13 +1,7 @@
 import { 
-  Zap, 
-  TrendingUp, 
-  Clock, 
-  CheckCircle, 
-  Star,
+  Zap,
   Package,
-  Calendar,
-  Cloud,
-  Search
+  AlertTriangle
 } from "lucide-react";
 import { MetricCard } from "@/components/Dashboard/MetricCard";
 import { AutomationCard } from "@/components/Dashboard/AutomationCard";
@@ -19,92 +13,110 @@ import { Link } from "react-router-dom";
 const metrics = [
   {
     title: "Automações Ativas",
-    value: "12",
-    change: "+2 esta semana",
-    changeType: "positive" as const,
+    value: "1",
+    change: "estoque",
+    changeType: "neutral" as const,
     icon: <Zap className="h-4 w-4" />,
     gradient: "primary" as const
   },
   {
-    title: "Execuções Hoje",
-    value: "234",
-    change: "+12% vs ontem",
-    changeType: "positive" as const,
-    icon: <TrendingUp className="h-4 w-4" />,
-    gradient: "success" as const
-  },
-  {
-    title: "Tempo Economizado",
-    value: "42h",
-    change: "neste mês",
+    title: "Produtos em Estoque",
+    value: "0",
+    change: "itens cadastrados",
     changeType: "neutral" as const,
-    icon: <Clock className="h-4 w-4" />,
-    gradient: "warning" as const
+    icon: <Package className="h-4 w-4" />,
+    gradient: "success" as const
   },
   {
-    title: "Taxa de Sucesso",
-    value: "98.5%",
-    change: "+0.3% vs semana passada",
-    changeType: "positive" as const,
-    icon: <CheckCircle className="h-4 w-4" />,
-    gradient: "success" as const
+    title: "Produtos Críticos",
+    value: "0",
+    change: "abaixo do mínimo",
+    changeType: "neutral" as const,
+    icon: <AlertTriangle className="h-4 w-4" />,
+    gradient: "warning" as const
   }
 ];
 
 const automations = [
-  {
-    id: "1",
-    name: "Monitor de Avaliações Google",
-    type: "Monitor de Avaliações",
-    status: "active" as const,
-    lastRun: "há 2 minutos",
-    executions: 1247,
-    icon: Star,
-    description: "Monitora novas avaliações no Google My Business e envia notificações instantâneas"
-  },
   {
     id: "2", 
     name: "Controle Estoque Loja Principal",
     type: "Controle de Estoque",
     status: "active" as const,
     lastRun: "há 15 minutos",
-    executions: 892,
+    executions: 0,
     icon: Package,
     description: "Alerta quando produtos atingem estoque mínimo definido"
-  },
-  {
-    id: "3",
-    name: "Confirmação Agendamentos",
-    type: "Agendamento Inteligente", 
-    status: "active" as const,
-    lastRun: "há 1 hora",
-    executions: 456,
-    icon: Calendar,
-    description: "Envia confirmações automáticas para agendamentos do Google Calendar"
-  },
-  {
-    id: "4",
-    name: "Backup Diário Dados",
-    type: "Backup Automático",
-    status: "inactive" as const,
-    lastRun: "ontem às 23:30",
-    executions: 30,
-    icon: Cloud,
-    description: "Realiza backup automático dos dados críticos da empresa"
-  },
-  {
-    id: "5",
-    name: "Monitor Preços Concorrência",
-    type: "Monitor de Concorrência",
-    status: "error" as const,
-    lastRun: "há 3 horas",
-    executions: 201,
-    icon: Search,
-    description: "Monitora preços da concorrência e alerta sobre mudanças significativas"
   }
 ];
 
+import { useEffect, useState } from 'react';
+import { supabase } from '../lib/supabase';
+
+interface DashboardMetrics {
+  totalProducts: number;
+  criticalProducts: number;
+  activeAutomations: number;
+}
+
 export default function Dashboard() {
+  const [metrics, setMetrics] = useState<DashboardMetrics>({
+    totalProducts: 0,
+    criticalProducts: 0,
+    activeAutomations: 1 // Apenas automação de estoque
+  });
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      // Buscar total de produtos
+      const { data: products, error: productsError } = await supabase
+        .from('estoque')
+        .select('id, quantidade_atual, estoque_minimo')
+        .returns<Array<{
+          id: string;
+          quantidade_atual: number;
+          estoque_minimo: number;
+        }>>();
+
+      if (!productsError && products) {
+        setMetrics(current => ({
+          ...current,
+          totalProducts: products.length,
+          criticalProducts: products.filter(p => p.quantidade_atual < p.estoque_minimo).length
+        }));
+      }
+    };
+
+    fetchMetrics();
+  }, []);
+
+  const metricsData = [
+    {
+      title: "Automações Ativas",
+      value: metrics.activeAutomations.toString(),
+      change: "estoque",
+      changeType: "neutral" as const,
+      icon: <Zap className="h-4 w-4" />,
+      gradient: "primary" as const
+    },
+    {
+      title: "Produtos em Estoque",
+      value: metrics.totalProducts.toString(),
+      change: "itens cadastrados",
+      changeType: "neutral" as const,
+      icon: <Package className="h-4 w-4" />,
+      gradient: "success" as const
+    },
+    {
+      title: "Produtos Críticos",
+      value: metrics.criticalProducts.toString(),
+      change: "abaixo do mínimo",
+      changeType: "warning" as const,
+      icon: <AlertTriangle className="h-4 w-4" />,
+      gradient: "warning" as const
+    }
+  ];
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -112,41 +124,19 @@ export default function Dashboard() {
         <div>
           <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
           <p className="text-muted-foreground">
-            Visão geral das suas automações empresariais
+            Visão geral do seu estoque
           </p>
         </div>
-        
-        <Link to="/automations/new">
-          <Button className="bg-gradient-primary shadow-elegant hover:scale-105 transition-all duration-200">
-            <Plus className="mr-2 h-4 w-4" />
-            Nova Automação
-          </Button>
-        </Link>
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {metrics.map((metric, index) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {metricsData.map((metric, index) => (
           <MetricCard key={index} {...metric} />
         ))}
       </div>
-
-      {/* Charts and Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <ActivityChart />
-        </div>
-        
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-foreground">Atividade Recente</h3>
-          <div className="space-y-3">
-            <div className="p-3 bg-card border border-border rounded-lg">
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-success rounded-full animate-pulse-glow" />
-                <span className="text-sm font-medium">Monitor de Avaliações executado</span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">há 2 minutos</p>
-            </div>
+    </div>
+  );
             
             <div className="p-3 bg-card border border-border rounded-lg">
               <div className="flex items-center space-x-2">

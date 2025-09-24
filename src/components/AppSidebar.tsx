@@ -5,12 +5,7 @@ import {
   Webhook, 
   Activity, 
   Settings, 
-  Plus,
-  Star,
   Package,
-  Calendar,
-  Cloud,
-  Search,
   Package2
 } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
@@ -37,11 +32,7 @@ const mainNavItems = [
 ]
 
 const automationTypes = [
-  { title: "Monitor de Avaliações", url: "/automations/reviews", icon: Star },
-  { title: "Controle de Estoque", url: "/automations/inventory", icon: Package },
-  { title: "Agendamento", url: "/automations/scheduling", icon: Calendar },
-  { title: "Backup Automático", url: "/automations/backup", icon: Cloud },
-  { title: "Monitor Concorrência", url: "/automations/competitors", icon: Search },
+  { title: "Controle de Estoque", url: "/automations/inventory", icon: Package }
 ]
 
 export function AppSidebar() {

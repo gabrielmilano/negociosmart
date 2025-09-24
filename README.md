@@ -1,22 +1,29 @@
-# Welcome to your Lovable project
+# NegocioSmart - Sistema de Gestão de Estoque
 
-## Project info
+## Visão Geral
 
-**URL**: https://lovable.dev/projects/c1feb1f5-834e-4ebd-8c0a-810ca911157e
+O NegocioSmart é um sistema de gestão de estoque desenvolvido com React, TypeScript e Supabase. Ele oferece funcionalidades para controle de estoque com foco em simplicidade e eficiência.
 
-## How can I edit this code?
+## Funcionalidades
 
-There are several ways of editing your application.
+### Gerenciamento de Estoque
+- Cadastro e atualização de produtos
+- Controle de quantidade em estoque
+- Alertas de estoque baixo
+- Histórico de movimentações
+- Dashboard com métricas em tempo real
 
-**Use Lovable**
+### API REST
+- Autenticação via API Key
+- Endpoints para consulta de estoque crítico
+- Registro de movimentações de estoque
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/c1feb1f5-834e-4ebd-8c0a-810ca911157e) and start prompting.
+## Tecnologias
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- React + TypeScript
+- Supabase (Banco de dados + Autenticação)
+- TailwindCSS
+- Shadcn/ui
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 

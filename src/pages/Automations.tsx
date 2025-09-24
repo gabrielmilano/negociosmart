@@ -9,20 +9,12 @@ import { NewAutomationModal } from "@/components/Automations/NewAutomationModal"
 
 const automationTypes = [
   {
-    id: "reviews",
-    name: "Monitor de Avaliações",
-    description: "Seja notificado instantaneamente sobre novas avaliações",
-    icon: Star,
-    color: "bg-gradient-warning",
-    count: 3
-  },
-  {
     id: "inventory", 
     name: "Controle de Estoque",
     description: "Alertas quando produtos estão acabando",
     icon: Package,
     color: "bg-gradient-primary",
-    count: 2
+    count: 0
   },
   {
     id: "scheduling",
@@ -30,7 +22,7 @@ const automationTypes = [
     description: "Confirmações automáticas de agendamentos",
     icon: Calendar,
     color: "bg-gradient-success",
-    count: 4
+    count: 0
   },
   {
     id: "backup",
@@ -38,66 +30,22 @@ const automationTypes = [
     description: "Seus dados sempre seguros na nuvem",
     icon: Cloud,
     color: "bg-gradient-primary",
-    count: 1
-  },
-  {
-    id: "competitors",
-    name: "Monitor de Concorrência",
-    description: "Acompanhe preços e promoções da concorrência", 
-    icon: Search,
-    color: "bg-gradient-destructive",
-    count: 2
+    count: 0
   }
 ];
 
 const allAutomations = [
-  {
-    id: "1",
-    name: "Monitor de Avaliações Google",
-    type: "Monitor de Avaliações",
-    status: "active" as const,
-    lastRun: "há 2 minutos",
-    executions: 1247,
-    icon: Star,
-    description: "Monitora novas avaliações no Google My Business e envia notificações instantâneas"
-  },
   {
     id: "2", 
     name: "Controle Estoque Loja Principal",
     type: "Controle de Estoque",
     status: "active" as const,
     lastRun: "há 15 minutos",
-    executions: 892,
+    executions: 0,
     icon: Package,
     description: "Alerta quando produtos atingem estoque mínimo definido"
-  },
-  {
-    id: "3",
-    name: "Confirmação Agendamentos",
-    type: "Agendamento Inteligente", 
-    status: "active" as const,
-    lastRun: "há 1 hora",
-    executions: 456,
-    icon: Calendar,
-    description: "Envia confirmações automáticas para agendamentos do Google Calendar"
-  },
-  {
-    id: "4",
-    name: "Backup Diário Dados",
-    type: "Backup Automático",
-    status: "inactive" as const,
-    lastRun: "ontem às 23:30",
-    executions: 30,
-    icon: Cloud,
-    description: "Realiza backup automático dos dados críticos da empresa"
-  },
-  {
-    id: "5",
-    name: "Monitor Preços Concorrência",
-    type: "Monitor de Concorrência",
-    status: "error" as const,
-    lastRun: "há 3 horas",
-    executions: 201,
+  }
+];
     icon: Search,
     description: "Monitora preços da concorrência e alerta sobre mudanças significativas"
   },
