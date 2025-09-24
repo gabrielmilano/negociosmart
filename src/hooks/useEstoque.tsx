@@ -233,10 +233,18 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
   const atualizarProduto = useCallback(async (id: string, dados: any) => {
     if (!user) return false
 
+    // Corrigir campos de data e UUID para não enviar "" (string vazia)
+    const dadosCorrigidos = { ...dados };
+    ['data_validade', 'data_ultima_entrada', 'data_ultima_saida', 'categoria_id', 'fornecedor_id'].forEach((campo) => {
+      if (dadosCorrigidos[campo] === "") {
+        dadosCorrigidos[campo] = null;
+      }
+    });
+
     const { error } = await supabase
       .from('produtos')
       .update({
-        ...dados,
+        ...dadosCorrigidos,
         atualizado_por: user.id,
         atualizado_em: new Date().toISOString()
       })
