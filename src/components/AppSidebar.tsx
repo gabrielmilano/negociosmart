@@ -27,6 +27,7 @@ const mainNavItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Automações", url: "/automations", icon: Zap },
   { title: "Estoque", url: "/estoque", icon: Package2 },
+  { title: "Pedidos", url: "/estoque/pedidos", icon: Package },
   { title: "Webhooks", url: "/webhooks", icon: Webhook },
   { title: "Logs", url: "/logs", icon: Activity },
   { title: "Configurações", url: "/settings", icon: Settings },

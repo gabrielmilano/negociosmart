@@ -782,7 +782,116 @@ export type Database = {
         Relationships: []
       }
     }
+    Tables: {
+      historico_status_pedido: {
+        Row: {
+          id: string
+          produto_id: string
+          status: StatusPedido
+          data: string
+          observacoes?: string | null
+          usuario_id: string
+          empresa_id: string
+          criado_em: string
+        }
+        Insert: {
+          id?: string
+          produto_id: string
+          status: StatusPedido
+          data?: string
+          observacoes?: string | null
+          usuario_id: string
+          empresa_id: string
+          criado_em?: string
+        }
+        Update: {
+          id?: string
+          produto_id?: string
+          status?: StatusPedido
+          data?: string
+          observacoes?: string | null
+          usuario_id?: string
+          empresa_id?: string
+          criado_em?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historico_status_pedido_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "historico_status_pedido_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "produtos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "historico_status_pedido_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+    }
     Views: {
+      view_produtos_pedidos: {
+        Row: {
+          id: string
+          codigo_interno: string
+          codigo_barras: string | null
+          nome: string
+          descricao: string | null
+          imagem: string | null
+          estoque_atual: number | null
+          estoque_minimo: number | null
+          estoque_maximo: number | null
+          preco_custo: number | null
+          preco_venda: number | null
+          unidade_medida: string | null
+          categoria_id: string | null
+          categoria_nome: string | null
+          categoria_cor: string | null
+          fornecedor_id: string | null
+          fornecedor_nome: string | null
+          empresa_id: string
+          ativo: boolean | null
+          criado_em: string | null
+          atualizado_em: string | null
+          atualizado_por: string | null
+          campos_extras: Json | null
+          valor_em_estoque: number | null
+          status_pedido: StatusPedido | null
+          ultima_atualizacao_pedido: string | null
+          observacoes_pedido: string | null
+          usuario_ultima_atualizacao: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "produtos_categoria_id_fkey"
+            columns: ["categoria_id"]
+            referencedRelation: "categorias_produto"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "produtos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "produtos_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          }
+        ]
+      },
       view_produtos_completos: {
         Row: {
           ativo: boolean | null
