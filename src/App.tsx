@@ -1,11 +1,17 @@
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Toaster as Sonner } from "@/componen          </TooltipProvider>
+        </WebhooksProvider>
+      </AutomacoesProvider>
+      </NotificationsProvider>
+    </AuthProvider>
+  </QueryClientProvider>);/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./hooks/useAuth";
 import { AutomacoesProvider } from "./contexts/AutomacoesContext";
 import { WebhooksProvider } from "./contexts/WebhooksContext";
+import { NotificationsProvider } from "./contexts/NotificationsContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import Automations from "./pages/Automations";
@@ -24,11 +30,12 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <AutomacoesProvider>
-        <WebhooksProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
+      <NotificationsProvider>
+        <AutomacoesProvider>
+          <WebhooksProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
             <BrowserRouter>
               <Routes>
                 <Route path="/login" element={<Login />} />

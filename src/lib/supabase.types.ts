@@ -9,6 +9,32 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      notificacoes: {
+        Row: {
+          id: string
+          title: string
+          message: string
+          type: 'info' | 'success' | 'warning' | 'error'
+          created_at: string
+          read: boolean
+        }
+        Insert: {
+          id?: string
+          title: string
+          message: string
+          type: 'info' | 'success' | 'warning' | 'error'
+          created_at?: string
+          read?: boolean
+        }
+        Update: {
+          id?: string
+          title?: string
+          message?: string
+          type?: 'info' | 'success' | 'warning' | 'error'
+          created_at?: string
+          read?: boolean
+        }
+      }
       estoque: {
         Row: {
           id: string

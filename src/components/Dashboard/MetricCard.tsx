@@ -6,7 +6,7 @@ interface MetricCardProps {
   title: string;
   value: string | number;
   change?: string;
-  changeType?: "positive" | "negative" | "neutral";
+  changeType?: "positive" | "negative" | "neutral" | "warning";
   icon: ReactNode;
   gradient?: "primary" | "success" | "warning" | "destructive";
   className?: string;
@@ -38,7 +38,8 @@ export function MetricCard({
   const changeClasses = {
     positive: "text-success",
     negative: "text-destructive",
-    neutral: "text-muted-foreground"
+    neutral: "text-muted-foreground",
+    warning: "text-warning"
   };
 
   return (

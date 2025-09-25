@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus, Filter, Search, Star, Package, Calendar, Cloud, RotateCw, Clock, AlertTriangle, TrendingUp } from "lucide-react";
+import { AutomationType, Automation } from "@/lib/types/automation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { AutomationCard } from "@/components/Dashboard/AutomationCard";
 import { NewAutomationModal } from "@/components/Automations/NewAutomationModal";
 
-const automationTypes = [
+const automationTypes: AutomationType[] = [
   {
     id: "inventory", 
     name: "Controle de Estoque",
@@ -34,26 +35,22 @@ const automationTypes = [
   }
 ];
 
-const allAutomations = [
+const allAutomations: Automation[] = [
   {
     id: "2", 
     name: "Controle Estoque Loja Principal",
     type: "Controle de Estoque",
-    status: "active" as const,
+    status: "active",
     lastRun: "há 15 minutos",
     executions: 0,
     icon: Package,
     description: "Alerta quando produtos atingem estoque mínimo definido"
-  }
-];
-    icon: Search,
-    description: "Monitora preços da concorrência e alerta sobre mudanças significativas"
   },
   {
     id: "6",
     name: "Avaliações Facebook",
     type: "Monitor de Avaliações",
-    status: "active" as const,
+    status: "active",
     lastRun: "há 30 minutos",
     executions: 834,
     icon: Star,

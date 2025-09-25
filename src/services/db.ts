@@ -1,18 +1,8 @@
 import { PostgrestError } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { Database } from '../lib/supabase.types';
 
-interface EstoqueItem {
-  id: string;
-  nome: string;
-  quantidade_atual: number;
-  estoque_minimo: number;
-  preco_custo: number;
-  preco_venda: number;
-  categoria_id: string | null;
-  fornecedor_id: string | null;
-  created_at: string;
-  updated_at: string;
-}
+type EstoqueItem = Database['public']['Tables']['estoque']['Row'];
 
 interface MovimentoEstoque {
   produto_id: string;

@@ -135,30 +135,28 @@ export default function Dashboard() {
           <MetricCard key={index} {...metric} />
         ))}
       </div>
-    </div>
-  );
-            
-            <div className="p-3 bg-card border border-border rounded-lg">
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-warning rounded-full" />
-                <span className="text-sm font-medium">Estoque baixo detectado</span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">há 15 minutos</p>
-            </div>
-            
-            <div className="p-3 bg-card border border-border rounded-lg">
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-destructive rounded-full" />
-                <span className="text-sm font-medium">Erro no monitor de preços</span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">há 3 horas</p>
-            </div>
+
+      {/* Alerts */}
+      <div className="mt-6 space-y-4">
+        <div className="p-3 bg-card border border-border rounded-lg">
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-warning rounded-full" />
+            <span className="text-sm font-medium">Estoque baixo detectado</span>
           </div>
+          <p className="text-xs text-muted-foreground mt-1">há 15 minutos</p>
+        </div>
+        
+        <div className="p-3 bg-card border border-border rounded-lg">
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-destructive rounded-full" />
+            <span className="text-sm font-medium">Erro no monitor de preços</span>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">há 3 horas</p>
         </div>
       </div>
 
       {/* Automations Grid */}
-      <div>
+      <div className="mt-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-foreground">Suas Automações</h2>
           <Link to="/automations">

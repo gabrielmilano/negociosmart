@@ -6,7 +6,8 @@ import {
   Activity, 
   Settings, 
   Package,
-  Package2
+  Package2,
+  Plus
 } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 
