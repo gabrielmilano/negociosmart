@@ -195,13 +195,22 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
       return null
     }
 
+    // INÍCIO DA CORREÇÃO: Converter "" para null para campos opcionais DATE/UUID
+    const dadosCorrigidos = { ...dados };
+    ['data_validade', 'categoria_id', 'fornecedor_id'].forEach((campo) => {
+      if (dadosCorrigidos[campo] === "" || dadosCorrigidos[campo] === undefined) {
+        dadosCorrigidos[campo] = null;
+      }
+    });
+    // FIM DA CORREÇÃO
+
     // Gerar código interno se não fornecido
-    if (!dados.codigo_interno) {
-      dados.codigo_interno = `PROD_${Date.now()}`
+    if (!dadosCorrigidos.codigo_interno) {
+      dadosCorrigidos.codigo_interno = `PROD_${Date.now()}`
     }
 
     console.log('Tentando criar produto:', {
-      dados,
+      dados: dadosCorrigidos,
       empresaId,
       userId: user.id
     })
@@ -209,7 +218,7 @@ export const EstoqueProvider: React.FC<{ children: ReactNode; empresaId?: string
     const { data, error } = await supabase
       .from('produtos')
       .insert({
-        ...dados,
+        ...dadosCorrigidos, // Usando dadosCorrigidos
         empresa_id: empresaId,
         criado_por: user.id,
         atualizado_por: user.id

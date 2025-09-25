@@ -178,6 +178,18 @@ export const ProdutoForm: React.FC<ProdutoFormProps> = ({
       imagens: imagemUrl ? [imagemUrl] : []
     }
     
+    // INÍCIO DA CORREÇÃO: Corrigir campos opcionais que o banco exige NULL em vez de ""
+    if (dadosCompletos.data_validade === "") {
+      dadosCompletos.data_validade = null;
+    }
+    if (dadosCompletos.categoria_id === "") {
+      dadosCompletos.categoria_id = null;
+    }
+    if (dadosCompletos.fornecedor_id === "") {
+      dadosCompletos.fornecedor_id = null;
+    }
+    // FIM DA CORREÇÃO
+
     console.log('Dados do produto a serem enviados:', dadosCompletos)
     onSave(dadosCompletos)
   }
